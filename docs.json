@@ -87,8 +87,8 @@
     }
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg",
+    "light": "/images/Frame9(1).svg",
+    "dark": "/images/Frame10.svg",
     "href": "/"
   },
   "navbar": {
@@ -137,5 +137,11 @@
     "playground": {
       "display": "interactive"
     }
+  },
+  "background": {
+    "decoration": "grid"
+  },
+  "appearance": {
+    "default": "system"
   }
 }
