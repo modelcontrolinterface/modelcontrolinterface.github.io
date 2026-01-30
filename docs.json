@@ -21,10 +21,9 @@
               {
                 "group": "Getting started",
                 "pages": [
-                  "mci-server/documentation/getting-started/advantages",
                   "documentation/index",
                   "documentation/quickstart",
-                  "documentation/development"
+                  "mci-server/documentation/getting-started/advantages"
                 ]
               }
             ]
