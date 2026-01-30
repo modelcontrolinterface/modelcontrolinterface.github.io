@@ -11,19 +11,6 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Blog",
-        "groups": [
-          {
-            "group": "Essays",
-            "pages": [
-              "blog/index",
-              "blog/why-mci-exists",
-              "blog/specs-need-registries"
-            ]
-          }
-        ]
-      },
-      {
         "tab": "Documentation",
         "groups": [
           {
@@ -34,6 +21,12 @@
               "documentation/development"
             ]
           }
+        ]
+      },
+      {
+        "tab": "blog",
+        "pages": [
+          "blog/index"
         ]
       }
     ]
