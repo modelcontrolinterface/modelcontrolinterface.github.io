@@ -13,7 +13,7 @@
       {
         "product": "MCI Server",
         "icon": "server-cog",
-        "description": "Model Control Interface is an open-source network of software that enables **fast**, **reliable**, **secure**, and **efficient** integration between LLM applications and external services.",
+        "description": "Central MCI proxy server for AI client - Service interaction",
         "tabs": [
           {
             "tab": "Documentation",
@@ -33,19 +33,22 @@
       {
         "product": "MCI Specification Registry",
         "icon": "file-cog",
-        "description": "A central source of truth for specifications and integrations for MCI"
+        "description": "Registry of specifications for MCI - Service integrations"
       },
       {
         "product": "MCI Module Registry",
-        "icon": "boxes"
+        "icon": "boxes",
+        "description": "Registry of modules and extensions to enhance MCI adapters and capabilities"
       },
       {
         "product": "MCI Dev Tools",
-        "icon": "wrench"
+        "icon": "wrench",
+        "description": "Tools for developing, testing and publishing specifications and modules for MCI"
       },
       {
         "product": "MCI Labs",
-        "icon": "test-tube"
+        "icon": "test-tube",
+        "description": "Research, bench-marking and testing new tools and products for MCI and AI in general"
       }
     ]
   },
