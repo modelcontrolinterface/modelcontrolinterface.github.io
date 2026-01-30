@@ -20,12 +20,20 @@
             "description": "Central MCI proxy server for AI client - Service interaction",
             "tabs": [
               {
+                "tab": "API Reference"
+              },
+              {
+                "tab": "Guide",
+                "pages": [
+                  "mci-server/documentation/getting-started/what-is-mci"
+                ]
+              },
+              {
                 "tab": "Documentation",
                 "groups": [
                   {
                     "group": "Getting started",
                     "pages": [
-                      "mci-server/documentation/getting-started/what-is-mci",
                       "mci-server/documentation/getting-started/quickstart",
                       "mci-server/documentation/getting-started/advantages"
                     ]
