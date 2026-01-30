@@ -21,8 +21,8 @@
               {
                 "group": "Getting started",
                 "pages": [
-                  "documentation/index",
-                  "documentation/quickstart",
+                  "mci-server/documentation/index",
+                  "mci-server/documentation/quickstart",
                   "mci-server/documentation/getting-started/advantages"
                 ]
               }
