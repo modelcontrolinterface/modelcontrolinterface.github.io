@@ -9,76 +9,87 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "products": [
+    "anchors": [
       {
-        "product": "MCI Server",
-        "icon": "server-cog",
-        "description": "Central MCI proxy server for AI client - Service interaction",
-        "tabs": [
+        "anchor": "Documentation",
+        "products": [
           {
-            "tab": "Documentation",
-            "groups": [
+            "product": "MCI Server",
+            "icon": "server-cog",
+            "description": "Central MCI proxy server for AI client - Service interaction",
+            "tabs": [
               {
-                "group": "Getting started",
-                "pages": [
-                  "mci-server/documentation/getting-started/index",
-                  "mci-server/documentation/getting-started/quickstart",
-                  "mci-server/documentation/getting-started/advantages"
+                "tab": "Documentation",
+                "groups": [
+                  {
+                    "group": "Getting started",
+                    "pages": [
+                      "mci-server/documentation/getting-started/what-is-mci",
+                      "mci-server/documentation/getting-started/quickstart",
+                      "mci-server/documentation/getting-started/advantages"
+                    ]
+                  }
                 ]
               }
             ]
-          }
-        ]
-      },
-      {
-        "product": "MCI Specification Registry",
-        "icon": "file-cog",
-        "description": "Registry of specifications for MCI - Service integrations",
-        "tabs": [
+          },
           {
-            "tab": "Documentation",
-            "pages": [
-              "mci-specification-registry/documentation/index"
-            ]
-          }
-        ]
-      },
-      {
-        "product": "MCI Module Registry",
-        "icon": "boxes",
-        "description": "Registry of modules and extensions to enhance MCI adapters and capabilities",
-        "tabs": [
-          {
-            "tab": "Specification",
-            "pages": [
-              "mci-module-registry/specification/index"
+            "product": "MCI Specification Registry",
+            "icon": "file-cog",
+            "description": "Registry of specifications for MCI - Service integrations",
+            "tabs": [
+              {
+                "tab": "Documentation",
+                "pages": [
+                  "mci-specification-registry/documentation/index"
+                ]
+              }
             ]
           },
           {
-            "tab": "Documentation",
-            "pages": [
-              "mci-module-registry/documentation/index"
+            "product": "MCI Module Registry",
+            "icon": "boxes",
+            "description": "Registry of modules and extensions to enhance MCI adapters and capabilities",
+            "tabs": [
+              {
+                "tab": "Specification",
+                "pages": [
+                  "mci-module-registry/specification/index"
+                ]
+              },
+              {
+                "tab": "Documentation",
+                "pages": [
+                  "mci-module-registry/documentation/index"
+                ]
+              }
             ]
-          }
-        ]
-      },
-      {
-        "product": "MCI Dev Tools",
-        "icon": "wrench",
-        "description": "Tools for developing, testing and publishing specifications and modules for MCI",
-        "tabs": [
+          },
           {
-            "tab": "Specification",
-            "pages": [
-              "mci-dev-tools/specification/index"
+            "product": "MCI Dev Tools",
+            "icon": "wrench",
+            "description": "Tools for developing, testing and publishing specifications and modules for MCI",
+            "tabs": [
+              {
+                "tab": "Specification",
+                "pages": [
+                  "mci-dev-tools/specification/index"
+                ]
+              }
             ]
+          },
+          {
+            "product": "MCI Labs",
+            "icon": "test-tube",
+            "description": "Research, bench-marking and testing new tools and products for MCI and AI in general"
           }
         ]
       },
       {
-        "product": "MCI Labs",
-        "icon": "test-tube",
-        "description": "Research, bench-marking and testing new tools and products for MCI and AI in general"
+        "anchor": "Blog",
+        "pages": [
+          "blog/f-test"
+        ]
       }
     ]
   },
