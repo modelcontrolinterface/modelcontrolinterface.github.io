@@ -20,9 +20,6 @@
             "description": "Central MCI proxy server for AI client - Service interaction",
             "tabs": [
               {
-                "tab": "API Reference"
-              },
-              {
                 "tab": "Guide",
                 "pages": [
                   "mci-server/guide/introduction",
@@ -40,6 +37,9 @@
                     ]
                   }
                 ]
+              },
+              {
+                "tab": "API Reference"
               }
             ]
           },
@@ -50,7 +50,9 @@
             "tabs": [
               {
                 "tab": "Documentation",
-                "pages": ["mci-specification-registry/documentation/index"]
+                "pages": [
+                  "mci-specification-registry/documentation/index"
+                ]
               }
             ]
           },
@@ -61,11 +63,15 @@
             "tabs": [
               {
                 "tab": "Specification",
-                "pages": ["mci-module-registry/specification/index"]
+                "pages": [
+                  "mci-module-registry/specification/index"
+                ]
               },
               {
                 "tab": "Documentation",
-                "pages": ["mci-module-registry/documentation/index"]
+                "pages": [
+                  "mci-module-registry/documentation/index"
+                ]
               }
             ]
           },
@@ -76,7 +82,9 @@
             "tabs": [
               {
                 "tab": "Specification",
-                "pages": ["mci-dev-tools/specification/index"]
+                "pages": [
+                  "mci-dev-tools/specification/index"
+                ]
               }
             ]
           },
