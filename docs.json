@@ -12,6 +12,7 @@
     "anchors": [
       {
         "anchor": "Documentation",
+        "icon": "book-open",
         "products": [
           {
             "product": "MCI Server",
@@ -87,9 +88,7 @@
       },
       {
         "anchor": "Blog",
-        "pages": [
-          "blog/f-test"
-        ]
+        "icon": "newspaper"
       }
     ]
   },
