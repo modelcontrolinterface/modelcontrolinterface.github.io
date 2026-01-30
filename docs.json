@@ -132,5 +132,10 @@
   },
   "interaction": {
     "drilldown": true
+  },
+  "api": {
+    "playground": {
+      "display": "interactive"
+    }
   }
 }
