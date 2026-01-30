@@ -25,7 +25,7 @@
               {
                 "tab": "Guide",
                 "pages": [
-                  "mci-server/documentation/getting-started/what-is-mci"
+                  "mci-server/guide/what-is-mci.mdx"
                 ]
               },
               {
