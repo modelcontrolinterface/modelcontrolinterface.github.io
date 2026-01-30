@@ -4,7 +4,7 @@
   "name": "Model Control Interface",
   "colors": {
     "primary": "#a995c9",
-    "light": "#a995c9",
+    "light": "#8a79ab",
     "dark": "#a995c9"
   },
   "favicon": "/favicon.svg",
@@ -129,7 +129,11 @@
     }
   },
   "background": {
-    "decoration": "grid"
+    "decoration": "grid",
+    "color": {
+      "light": "#f8f7fa",
+      "dark": "#1a1823"
+    }
   },
   "appearance": {
     "default": "system"
