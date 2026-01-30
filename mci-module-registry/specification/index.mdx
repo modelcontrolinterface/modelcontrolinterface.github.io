@@ -1,0 +1,435 @@
+---
+title: 'MCI Specification Registry Architecture'
+---
+
+## Purpose and Scope
+
+The **MCI Specification Registry** is a centralized, public registry for discovering, publishing, and retrieving specifications used within the Model Control Interface (MCI) ecosystem.
+
+Specifications define the structure, behavior, and governing interactions between MCI and external tools or services. The registry exists to provide a shared source of truth for these specifications, enabling interoperability, trust, and reproducibility across independent systems.
+
+The registry is intentionally minimal. It is not an execution environment, a package manager, or a policy engine. It is an infrastructure layer for agreements.
+
+---
+
+## Design Principles
+
+The MCI Specification Registry is designed around the following principles:
+
+- **Public by Default**
+    
+    Specifications and their releases are publicly readable unless explicitly restricted by future extensions.
+    
+- **Immutability of Releases**
+    
+    Once a specification release is published, its contents must not change. Corrections require publishing a new release.
+    
+- **Explicit Authority**
+    
+    All write actions are traceable to authenticated users or organizations with defined roles.
+    
+- **Minimal Interpretation**
+    
+    The registry stores and distributes specifications but does not interpret or validate their semantic meaning beyond structural and safety checks.
+    
+- **Predictable Infrastructure**
+    
+    The registry behaves consistently and avoids hidden automation, background mutation, or silent corrections.
+    
+
+---
+
+## Design Standard
+
+The MCI Specification Registry is conceptually similar to platforms such as GitHub or Buf.build. Many operational patterns and expectations can be inferred through comparison.
+
+This document focuses on the specific implementation details, constraints, and design decisions relevant to this registry.
+
+All registries implementing this model must also adhere to the general **MCI Specification Registry Guidelines**.
+
+---
+
+## Authentication and Authorization Model
+
+### Authentication
+
+Authentication is handled via Supabase Auth. Initial support is limited to GitHub OAuth.
+
+Authentication establishes user identity only. Authorization decisions are handled entirely by the registry backend.
+
+If an authentication provider account is deleted, the corresponding registry account remains but becomes inaccessible until alternative authentication methods are added.
+
+---
+
+### Authorization
+
+Authorization is evaluated at request time based on:
+
+- User identity
+- API token scope
+- Ownership or membership relationship
+- Role within an organisation
+
+Authorization checks are enforced exclusively in the backend API layer.
+
+---
+
+## User Profiles
+
+Alongside authentication provider data, the registry stores a mutable local profile for each user.
+
+### Database Table: `users`
+
+| Column | Type | Constraints | Description |
+| --- | --- | --- | --- |
+| id | text | PK | Stable internal user identifier |
+| display_name | text | not null | Human-readable name |
+| email | text | not null | Contact email |
+| created_at | timestamptz | not null | Creation timestamp |
+
+Users cannot be deleted while owning specifications or while acting as an administrator of an organisation that owns specifications.
+
+---
+
+## API Tokens
+
+API tokens allow non-interactive clients such as CLI tools, CI systems, and automation workflows to interact with the registry.
+
+Tokens are generated once and displayed only at creation time. They are stored as cryptographic hashes and may be revoked or expire automatically.
+
+### Token Scope Enumeration
+
+Scopes are explicit and additive. A request must be fully covered by the token scope set.
+
+Supported scopes include:
+
+**User Profile Management**
+
+- user.profile.read
+- user.profile.update
+- user.profile.delete
+
+**User Specification Management**
+
+- user.spec.read
+- user.spec.create
+- user.spec.update
+- user.spec.delete
+
+**Organisation Management**
+
+- org.create
+- org.read
+- org.update
+- org.delete
+- org.members.manage
+
+**Organisation Specification Management**
+
+- org.spec.read
+- org.spec.create
+- org.spec.update
+- org.spec.delete
+
+### Database Table: `api_tokens`
+
+| Column | Type | Constraints | Description |
+| --- | --- | --- | --- |
+| id | uuid | PK | Token identifier |
+| token_hash | text | not null, unique | Hashed token value |
+| user_id | text | FK users(id) | Token owner |
+| scopes | text[] | not null | Authorized scopes |
+| expires_at | timestamptz |  | Expiration timestamp |
+| created_at | timestamptz | not null | Creation timestamp |
+
+Expired tokens are rejected without grace period. Token cleanup is handled by scheduled jobs.
+
+---
+
+## Organisations
+
+Organisations provide shared ownership and governance over specifications.
+
+### Organisation Visibility
+
+- Public organisations are discoverable and visible.
+- Private organisations exist but do not expose metadata publicly.
+- Specification visibility remains public in all cases.
+
+### Database Table: `organisations`
+
+| Column | Type | Constraints | Description |
+| --- | --- | --- | --- |
+| id | text | PK | Organisation identifier |
+| display_name | text | not null | Human-readable name |
+| email | text |  | Contact email |
+| is_public | boolean | not null | Visibility flag |
+| created_at | timestamptz | not null | Creation timestamp |
+| updated_at | timestamptz | not null | Update timestamp |
+
+Organisations cannot be deleted while owning specifications.
+
+---
+
+## Organisation Members
+
+Organisation membership defines user privileges within an organisation.
+
+### Database Table: `organisation_members`
+
+| Column | Type | Constraints | Description |
+| --- | --- | --- | --- |
+| id | uuid | PK | Membership identifier |
+| organisation_id | text | FK organisations(id) | Organisation |
+| user_id | text | FK users(id) | Member |
+| is_admin | boolean | not null | Admin privilege |
+| created_at | timestamptz | not null | Creation timestamp |
+
+A unique constraint exists on `(organisation_id, user_id)`. At least one administrator must exist for any organisation that owns specifications.
+
+---
+
+## Specifications
+
+A specification represents a logical contract across all of its published releases.
+
+### Specification Identity Rules
+
+- Identifiers are lowercase
+- Identifiers are case-insensitive
+- Identifiers follow a namespace-based regex
+- Identifiers are immutable once created
+- Identifiers are never reused
+
+### Ownership
+
+A specification may be owned by:
+
+- One or more users
+- One organisation
+
+Ownership types are mutually exclusive.
+
+### Deprecation
+
+Deprecation is a specification-level property. Deprecated specifications remain retrievable but are deprioritized in discovery.
+
+### Database Table: `specifications`
+
+| Column | Type | Constraints | Description |
+| --- | --- | --- | --- |
+| id | text | PK | Canonical specification identifier |
+| name | text | not null | Human-readable name |
+| description | text | not null | Specification description |
+| default_release_id | text | FK specification_releases(id) | Recommended release |
+| is_deprecated | boolean | not null | Deprecation flag |
+| created_at | timestamptz | not null | Creation timestamp |
+| updated_at | timestamptz | not null | Update timestamp |
+
+Specifications cannot be deleted while releases exist.
+
+---
+
+## Specification Ownership Tables
+
+### User-Owned Specifications
+
+| Column | Type | Constraints | Description |
+| --- | --- | --- | --- |
+| id | uuid | PK | Ownership record |
+| user_id | text | FK users(id) | Owner |
+| specification_id | text | FK specifications(id) | Specification |
+| created_at | timestamptz | not null | Creation timestamp |
+
+### Organisation-Owned Specifications
+
+| Column | Type | Constraints | Description |
+| --- | --- | --- | --- |
+| id | uuid | PK | Ownership record |
+| organisation_id | text | FK organisations(id) | Organisation |
+| specification_id | text | FK specifications(id) | Specification |
+| created_at | timestamptz | not null | Creation timestamp |
+
+---
+
+## Specification Releases
+
+Specification releases represent immutable published versions of a specification document.
+
+### Supported File Types
+
+Only plain-text formats are supported:
+
+- text/plain
+- text/yaml
+- text/x-yaml
+- application/yaml
+- application/json
+- application/toml
+- text/toml
+- application/x-protobuf
+- application/protobuf
+
+Binary formats are not permitted.
+
+### Release Integrity
+
+A SHA256 hash is computed at upload time and stored with the release metadata. Files are stored in Supabase Storage under deterministic paths.
+
+### Yanked Releases
+
+Yanking is a soft exclusion mechanism. Yanked releases remain retrievable by explicit request but are excluded from default resolution.
+
+### Database Table: `specification_releases`
+
+| Column | Type | Constraints | Description |
+| --- | --- | --- | --- |
+| id | text | PK | Release identifier |
+| specification_id | text | FK specifications(id) | Parent specification |
+| type | text | not null | Specification format |
+| file_url | text | not null | Storage reference |
+| sha256 | text | not null | Content hash |
+| is_yanked | boolean | not null | Yanked flag |
+| yank_reason | text |  | Yank reason |
+| created_at | timestamptz | not null | Publication timestamp |
+
+---
+
+## Row Level Security (RLS)
+
+Supabase Row Level Security policies are enforced on all tables to prevent direct unauthorized access. The backend API operates using a service role key and is responsible for all authorization logic.
+
+The following high-level RLS rules apply:
+
+**users**
+
+- Public read access to display_name and id only
+- Full read/write access restricted to the authenticated user owning the row
+
+**api_tokens**
+
+- No public access
+- Full read/write access restricted to token owner
+
+**organisations**
+
+- Public read access when is_public is true
+- Write access restricted to organisation administrators
+
+**organisation_members**
+
+- No public access
+- Read access restricted to organisation members
+- Write access restricted to organisation administrators
+
+**specifications**
+
+- Public read access
+- Write access restricted to owning users or owning organisation administrators
+
+**specification_releases**
+
+- Public read access
+- Write access restricted to specification owners
+
+Ownership resolution is enforced at the application layer, not within database policies.
+
+---
+
+## Indexed Fields
+
+To support efficient discovery, filtering, and integrity enforcement, the following fields are indexed:
+
+**users**
+
+- id (primary key)
+- email (unique)
+
+**api_tokens**
+
+- token_hash (unique)
+- user_id
+- expires_at
+
+**organisations**
+
+- id (primary key)
+- is_public
+
+**organisation_members**
+
+- organisation_id
+- user_id
+- (organisation_id, user_id) unique composite index
+
+**specifications**
+
+- id (primary key)
+- is_deprecated
+- created_at
+- updated_at
+
+**specification_releases**
+
+- id (primary key)
+- specification_id
+- is_yanked
+- created_at
+- (specification_id, id) unique composite index
+
+---
+
+## API Design
+
+### Core Endpoints
+
+- `POST /specs` Publish a specification or new release
+- `GET /specs` List specifications with pagination, filtering, and sorting
+- `GET /specs/{id}` Retrieve specification metadata
+- `GET /specs/{id}@{version}` Retrieve release metadata
+- `GET {file_url}` Download raw specification content
+
+Duplicate `(specification_id, version)` combinations are rejected.
+
+---
+
+## Caching Strategy
+
+- Metadata responses may be cached
+- File downloads may be cached aggressively
+- Cache headers reflect immutability guarantees
+- Yank or deprecation does not invalidate cached files
+
+---
+
+## Reporting and Moderation
+
+Users may report specifications for broken definitions, misleading descriptions, or policy violations.
+
+Reports affect discoverability but do not immediately remove content.
+
+Moderation actions may include deprecation, yanking, or removal in severe cases.
+
+No public audit log is provided in the initial version.
+
+---
+
+## Frontend Responsibilities
+
+The frontend provides browsing, discovery, organisation management, token management, and reporting interfaces.
+
+The frontend never accesses Supabase directly. All writes are mediated through backend API routes.
+
+User support is handled through client-side email contact rather than API features.
+
+---
+
+## Security and Operational Considerations
+
+- Strict content type validation
+- Conservative file size limits
+- Rate limiting on publish and search
+- Authentication required for mutation
+- Token expiration enforcement
+
+Out of scope features include cryptographic signing, malware scanning, private registries, federation, and supply chain guarantees.
