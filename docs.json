@@ -9,24 +9,29 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "tabs": [
+    "products": [
       {
-        "tab": "Documentation",
-        "groups": [
+        "product": "Untitled Product",
+        "tabs": [
           {
-            "group": "Getting started",
+            "tab": "Documentation",
+            "groups": [
+              {
+                "group": "Getting started",
+                "pages": [
+                  "documentation/index",
+                  "documentation/quickstart",
+                  "documentation/development"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "blog",
             "pages": [
-              "documentation/index",
-              "documentation/quickstart",
-              "documentation/development"
+              "blog/index"
             ]
           }
-        ]
-      },
-      {
-        "tab": "blog",
-        "pages": [
-          "blog/index"
         ]
       }
     ]
