@@ -138,17 +138,13 @@
   "appearance": {
     "default": "system"
   },
-  "fonts": {
-    "family": "Inter",
-    "weight": 400,
-    "format": "woff2"
-  },
   "banner": {
     "dismissible": true,
-    "content": "Hello World"
+    "content": "Welcome To MCI"
   },
   "styling": {
-    "latex": true
+    "latex": true,
+    "eyebrows": "breadcrumbs"
   },
   "icons": {
     "library": "lucide"
