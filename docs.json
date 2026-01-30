@@ -1,13 +1,13 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Model Control Interface",
   "colors": {
-    "primary": "#16A34A",
+    "primary": "#15ba88",
     "light": "#07C983",
     "dark": "#15803D"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/images/Frame9.svg",
   "navigation": {
     "tabs": [
       {
@@ -85,7 +85,8 @@
   },
   "logo": {
     "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "dark": "/logo/light.svg",
+    "href": "/"
   },
   "navbar": {
     "links": [
@@ -118,5 +119,12 @@
       "github": "https://github.com/mintlify",
       "linkedin": "https://linkedin.com/company/mintlify"
     }
+  },
+  "description": "MCI (Model Control Interface) is an open-source network of software that enables fast, reliable, secure, and efficient integration between LLM applications and external services.",
+  "background": {
+    "decoration": "gradient"
+  },
+  "appearance": {
+    "default": "system"
   }
 }
