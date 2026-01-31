@@ -21,24 +21,25 @@
             "tabs": [
               {
                 "tab": "Guide",
+                {
+                  "group": "Get Started",
+                  "pages": [
+                    "documentation/mci-server/guide/overview",
+                    "mci-server/guide/introduction"
+                  ]
+                },
                 "pages": [
-                  "documentation/mci-server/guide/welcome",
-                  "mci-server/guide/overview",
                   "mci-server/guide/faq",
                   "mci-server/guide/comparison"
                 ]
               },
               {
                 "tab": "Documentation",
-                "pages": [
-                  "mci-server/documentation/quickstart"
-                ]
+                "pages": ["mci-server/documentation/quickstart"]
               },
               {
                 "tab": "API Reference",
-                "pages": [
-                  "mci-server/documentation/quickstart"
-                ]
+                "pages": ["mci-server/documentation/quickstart"]
               }
             ]
           },
@@ -49,9 +50,7 @@
             "tabs": [
               {
                 "tab": "Documentation",
-                "pages": [
-                  "mci-specification-registry/documentation/index"
-                ]
+                "pages": ["mci-specification-registry/documentation/index"]
               }
             ]
           },
@@ -62,15 +61,11 @@
             "tabs": [
               {
                 "tab": "Specification",
-                "pages": [
-                  "mci-module-registry/specification/index"
-                ]
+                "pages": ["mci-module-registry/specification/index"]
               },
               {
                 "tab": "Documentation",
-                "pages": [
-                  "mci-module-registry/documentation/index"
-                ]
+                "pages": ["mci-module-registry/documentation/index"]
               }
             ]
           },
@@ -81,9 +76,7 @@
             "tabs": [
               {
                 "tab": "Specification",
-                "pages": [
-                  "mci-dev-tools/specification/index"
-                ]
+                "pages": ["mci-dev-tools/specification/index"]
               }
             ]
           },
