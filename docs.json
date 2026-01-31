@@ -22,7 +22,7 @@
               {
                 "tab": "Guide",
                 "pages": [
-                  "mci-server/guide/introduction",
+                  "mci-server/guide/overview",
                   "mci-server/guide/faq"
                 ]
               },
