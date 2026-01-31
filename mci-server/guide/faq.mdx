@@ -1,207 +1,55 @@
 ---
 title: "Frequently Asked Questions"
+description: "Frequent questions about MCI"
 ---
-
-# MCI: A Control‑Oriented Alternative to Context‑Based AI Integration
-
-## Problem Statement
-
-Modern AI systems are increasingly expected to act in the real world: modifying databases, deploying code, controlling devices, monitoring systems, and coordinating with other software agents. While large language models excel at reasoning and synthesis, they are non‑deterministic by nature and were never designed to be trusted execution engines.
-
-Most current integration approaches attempt to bridge this gap by extending model _context_. They describe external tools, APIs, and capabilities to the model and rely on the model to invoke them correctly and safely. This approach works for experimentation, but it begins to fail as soon as systems require reliability, security, cost predictability, or long‑running autonomy.
-
-## MCP in Context
-
-The Model Context Protocol (MCP) represents this context‑extension approach. MCP standardizes how tools and services are described to a model and how models issue structured requests back to those services.
-
-This design offers clear benefits:
-
-- Low initial setup cost
-- A single, shared protocol
-- Strong early momentum and ecosystem interest
-
-For lightweight, low‑risk integrations, MCP is often sufficient.
-
-However, MCP’s core assumption is that exposing capabilities through context is an acceptable control surface. As systems scale, this assumption becomes increasingly fragile.
-
-## Where Context‑Based Control Breaks Down
-
-Relying on context as the primary mechanism for action introduces several systemic constraints:
-
-- **Security** depends on the model interpreting instructions correctly rather than on enforced boundaries.
-- **Cost** scales with integration complexity due to token inflation.
-- **Reliability** is limited by non‑deterministic behavior and late error detection.
-- **State** is ephemeral, session‑bound, and prone to loss or hallucination.
-- **Latency** grows as serialized, blocking requests accumulate.
-
-These are not implementation bugs. They are consequences of using a probabilistic reasoning system as an execution coordinator.
-
-## The MCI Reframing
-
-The Model Control Interface (MCI) takes a different position:
-
-Models are excellent at deciding _what should be done_. They should not be responsible for _doing it_.
-
-MCI introduces a control‑oriented architecture that places deterministic systems between model intent and real‑world effects. Instead of emitting tool calls, models emit executable code that runs inside a sandboxed runtime managed by MCI.
-
-In this model:
-
-- The AI reasons.
-- The runtime executes.
-- The system enforces.
-
-## What MCI Enables
-
-By separating reasoning from execution, MCI enables capabilities that are difficult or impractical under context‑based protocols:
-
-- **Deterministic security** through sandboxing, permissions, and secret isolation
-- **Long‑running and asynchronous workflows** without context growth
-- **Action chaining** expressed as programs rather than serialized requests
-- **Persistent state** managed explicitly outside the model
-- **Passive context** via event‑driven hooks
-- **Strong observability** through interceptors and structured logging
-
-These properties make MCI suitable for domains such as robotics, CI/CD automation, security monitoring, data pipelines, and multi‑agent collaboration.
-
-## A Concrete Example
-
-Consider an autonomous code maintenance agent.
-
-Under a context‑based approach, each step—reading files, running tests, applying patches, committing changes—must be described, invoked, and validated through the model’s context. Errors surface late, costs accumulate, and failures are hard to recover from.
-
-Under MCI, the model emits a script that:
-
-- Reads the repository
-- Runs tests
-- Applies fixes
-- Validates results
-- Pushes changes
-
-All intermediate steps execute inside a sandbox with explicit permissions, typed interfaces, and streaming feedback. The model reasons once; the system executes reliably.
-
-## When to Choose MCI
-
-MCI is particularly well‑suited for systems that require:
-
-- Strong security guarantees
-- Predictable costs
-- Long‑running or background execution
-- Integration with many heterogeneous services
-- Clear auditability and failure recovery
-
-For exploratory tooling and low‑risk integrations, simpler context‑based approaches may remain appropriate.
-
-## Closing Perspective
-
-MCI is not a replacement for reasoning‑centric protocols. It is a response to a different class of problems.
-
-Where context‑based systems ask models to behave responsibly, MCI builds systems that do not require trust in model behavior to be safe.
-
-As AI systems move from assistants to operators, this distinction becomes increasingly important.
-
----
-
-## Frequently Asked Questions (FAQ)
 
 <AccordionGroup>
-  <Accordion title="" icon="message-circle-question-mark">
-    
+  <Accordion title="What is MCI actually providing?" icon="message-circle-question-mark">
+    MCI is an open-source, **protocol-agnostic** system.
+    Clients connect to an MCI server, which then handles all communication and
+    execution logic with end services. It acts as the "operating system" for
+    model-driven actions.
   </Accordion>
-  <Accordion title="" icon="message-circle-question-mark">
-    
+  <Accordion title="What does the “code” look like?" icon="message-circle-question-mark">
+    MCI doesn't force a proprietary language (DSL) on you. It uses
+    **language modules** that translate specifications into standard libraries.
+
+    This means models can write tasks in Python, JavaScript, or any language the
+    runtime supports.
+  </Accordion>
+  <Accordion title="What makes MCI more secure and observable?" icon="message-circle-question-mark">
+    MCI utilizes **interceptor modules** that function like middleware.
+    These modules can inspect every dispatch made by the code to block,
+    redirect, or log actions. For example, a Permissions Interceptor can
+    cross-reference an action against a security policy before execution.
+  </Accordion>
+  <Accordion title="Is MCI execution stateful?" icon="message-circle-question-mark">
+    Yes. While MCP relies on the model’s limited context window to "remember"
+    state, MCI shifts state management to the code and the runtime. This keeps
+    the model's context clear and makes tool interactions significantly more
+    reliable.
+  </Accordion>
+  <Accordion title="How does MCI interact with the existing MCP ecosystem?" icon="message-circle-question-mark">
+    MCI is designed to complement, not replace, MCP. To MCI, MCP is simply
+    another protocol standard, much like REST or JSON-RPC. An MCI server can act
+    as a bridge to existing MCP servers, giving you the best of both worlds.
+  </Accordion>
+  <Accordion title="Is MCI trying to replace tool calling?" icon="message-circle-question-mark">
+    Not at all. MCI still utilizes tool calls, but it enables
+    **multi-step, stateful** execution. Instead of the model performing one tool
+    call at a time in a "chat" loop, it can chain and parallelize multiple calls
+    within a single execution block.
+  </Accordion>
+  <Accordion title="Why not just extend MCP to do this?" icon="message-circle-question-mark">
+    MCP is a communication standard. Incorporating these features would require
+    redefining its core principles, likely breaking existing implementations.
+    While third-party wrappers could add *some* of this functionality to MCP,
+    they cannot match the native security and efficiency of a purpose-built
+    control interface.
+  </Accordion>
+  <Accordion title="Is MCI opinionated about hosting or deployment?" icon="message-circle-question-mark">
+    No. MCI is infrastructure-neutral. Whether you are running on-prem, in the
+    cloud, or on embedded devices, MCI is compatible as long as the host
+    environment can enforce the execution contract.
   </Accordion>
 </AccordionGroup>
-
-### What is MCI actually providing, structurally?
-
-MCI is primarily a **protocol and execution model specification**, not a hosted SaaS product. It defines how models describe _actions_, _execution plans_, _state_, and _capabilities_ in a way that is deterministic and inspectable.
-
-An implementation of MCI requires an **MCI Host** (sometimes called an engine or runtime), but this host is not singular or proprietary. Any execution environment—Docker sandboxes, E2B-style ephemeral VMs, secure runners, or internal automation platforms—can implement the MCI host interface. You do not need to run a “blessed” platform to adopt MCI; you need a host that understands and enforces the MCI execution contract.
-
-In short: MCI is something you _speak_, not something you _subscribe to_.
-
-### What does the “code” look like?
-
-MCI does not require a bespoke, model-specific DSL. The execution unit is intentionally defined as **real code in real languages**, most commonly a constrained subset of languages like Python or JavaScript, executed by a host that enforces strict capability and resource boundaries.
-
-This avoids the prompt-tax of teaching models a new syntax and leverages their existing fluency with mainstream languages. Where structure is needed, it is expressed through **execution metadata and manifests**, not through inventing yet another programming language.
-
-The model writes code; MCI defines _how that code is interpreted, constrained, observed, and chained_.
-
-### How does security and interception work if logic is embedded in code?
-
-Unlike MCP, which intercepts individual tool calls, MCI operates at the **execution boundary**. The host does not blindly run code; it evaluates an execution plan against declared capabilities, policies, and threat constraints _before_ execution begins.
-
-During execution, hosts may:
-
-- Step execution instruction-by-instruction
-- Enforce syscall, network, and filesystem policies
-- Interrupt execution when forbidden transitions occur
-- Require approvals at declared checkpoints
-
-This makes interception _structural_, not reactive. Dangerous operations are constrained by capability contracts, not discovered mid-loop by surprise.
-
-### Is MCI execution stateful?
-
-MCI explicitly supports **stateful execution**, but does not mandate it. An MCI host may expose:
-
-- Stateless execution (each request is isolated)
-- Session-scoped state (like a notebook kernel)
-- Durable state (explicitly persisted artifacts)
-
-Crucially, state is **declared and observable**. If state exists, it exists by contract, not by accident. This avoids the ambiguity common in tool-call-based systems where state leaks implicitly through prompts.
-
-### How does MCI interact with the existing MCP ecosystem?
-
-MCI is designed to _compose with_ MCP, not replace it overnight. MCP servers can be treated as **capability providers** within an MCI host. In practice, an MCI execution may invoke MCP tools as part of a larger action chain.
-
-This allows existing MCP investments to remain useful while gaining the benefits of structured execution, observability, and chaining.
-
-### What makes MCI more observable than MCP?
-
-MCP exposes _events_. MCI exposes **execution semantics**.
-
-With MCI, hosts can observe:
-
-- Planned vs actual execution paths
-- State transitions
-- Resource consumption per action
-- Partial failures and retries
-- Causal chains across multiple actions
-
-This enables debugging, auditing, replay, and postmortem analysis that are extremely difficult when behavior is fragmented across isolated tool calls.
-
-### Is MCI trying to replace tool calling?
-
-No. Tool calling remains useful for simple, atomic interactions. MCI exists for situations where models must perform **multi-step, stateful, policy-sensitive work**. The two approaches coexist; MCI simply acknowledges that non-trivial automation already behaves like execution, whether we admit it or not.
-
-### Why not just extend MCP to do this?
-
-MCP is optimized around message passing and tool invocation. MCI is optimized around execution, state, and control. Extending MCP to fully support execution semantics would require redefining its core assumptions about statelessness, observability, and authority boundaries.
-
-At that point, the result would no longer meaningfully be MCP.
-
-### What are MCP’s advantages relative to MCI?
-
-MCP has significant strengths:
-
-- Broad adoption and mindshare
-- Strong institutional backing and funding
-- A growing ecosystem of servers and tools
-- Low conceptual overhead for simple use cases
-
-MCI does not compete with these advantages directly. Instead, it targets a different layer of the stack—one that MCP was never designed to occupy.
-
-### When is MCP sufficient on its own?
-
-If your application consists of short-lived requests, simple tool calls, and minimal state, MCP is often the right choice. MCI becomes relevant when coordination, execution integrity, security boundaries, or auditability become first-class concerns.
-
-### Is MCI opinionated about hosting or deployment?
-
-No. MCI is intentionally neutral about infrastructure. Cloud, on-prem, ephemeral, embedded—all are compatible as long as the host can enforce the execution contract.
-
-### Is MCI finished?
-
-No, and it shouldn’t be. MCI is being designed as a **living specification**, intended to evolve alongside real-world usage. Some questions are intentionally left open so they can be answered by implementations, not theory.
-
-That openness is a feature, not a gap. ently
