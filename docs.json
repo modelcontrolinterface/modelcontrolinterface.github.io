@@ -33,8 +33,7 @@
                   {
                     "group": "Getting started",
                     "pages": [
-                      "mci-server/documentation/getting-started/quickstart",
-                      "mci-server/documentation/getting-started/advantages"
+                      "mci-server/documentation/quickstart"
                     ]
                   }
                 ]
