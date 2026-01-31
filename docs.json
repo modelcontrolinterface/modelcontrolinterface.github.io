@@ -24,24 +24,16 @@
                 "pages": [
                   "mci-server/guide/overview",
                   "mci-server/guide/faq",
-                  "mci-server/guide/comparison"
+                  "mci-server/guide/comparison_1"
                 ]
               },
               {
                 "tab": "Documentation",
-                "groups": [
-                  "pages": [
-                    "mci-server/documentation/quickstart"
-                  ]
-                ]
+                "pages": ["mci-server/documentation/quickstart"]
               },
               {
                 "tab": "API Reference",
-                "groups": [
-                  "pages": [
-                    "mci-server/documentation/quickstart"
-                  ]
-                ]
+                "pages": ["mci-server/documentation/quickstart"]
               }
             ]
           },
