@@ -23,8 +23,8 @@
                 "tab": "Guide",
                 "pages": [
                   "mci-server/guide/overview",
-                  "mci-server/guide/faq",
-                  "mci-server/guide/comparison"
+                  "mci-server/guide/comparison",
+                  "mci-server/guide/faq"
                 ]
               },
               {
