@@ -25,13 +25,11 @@
                   "group": "Get Started",
                   "pages": [
                     "documentation/mci-server/guide/overview",
-                    "mci-server/guide/introduction"
+                    "mci-server/guide/introduction",
+                    "mci-server/guide/faq",
+                    "mci-server/guide/comparison"
                   ]
-                },
-                "pages": [
-                  "mci-server/guide/faq",
-                  "mci-server/guide/comparison"
-                ]
+                }
               },
               {
                 "tab": "Documentation",
