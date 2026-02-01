@@ -1,0 +1,49 @@
+---
+import Link from "@components/Link.astro";
+import { Icon } from "astro-icon/components";
+import { SITE } from "../config";
+---
+
+<header class="mx-auto max-w-screen-sm p-5">
+  <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b-2">
+    <div class="text-lg font-bold">{SITE.NAME}</div>
+
+    <div class="w-full flex items-end gap-8 justify-between">
+      <nav class="flex gap-4">
+        <Link href="/blog">/blog</Link>
+        <Link href="https://modelcontrolinterface.mintlify.app/server/introduction" external={true}>/docs</Link>
+      </nav>
+
+      <div
+        class="flex items-center gap-1 rounded border bg-muted p-1"
+        role="group"
+        aria-label="Theme selector"
+      >
+        <button
+          data-theme="light"
+          aria-label="Light theme"
+          aria-pressed="false"
+          class="theme-btn"
+        >
+          <Icon name="lucide:sun" />
+        </button>
+        <button
+          data-theme="dark"
+          aria-label="Dark theme"
+          aria-pressed="false"
+          class="theme-btn"
+        >
+          <Icon name="lucide:moon" />
+        </button>
+        <button
+          data-theme="system"
+          aria-label="System theme"
+          aria-pressed="false"
+          class="theme-btn"
+        >
+          <Icon name="lucide:monitor" />
+        </button>
+      </div>
+    </div>
+  </div>
+</header>

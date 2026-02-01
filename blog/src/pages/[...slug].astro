@@ -3,6 +3,7 @@ import { Icon } from "astro-icon/components";
 import PageLayout from "@layouts/PageLayout.astro";
 import Container from "@components/Container.astro";
 import FormattedDate from "@components/FormattedDate.astro";
+import NewsletterForm from "@components/NewsletterForm.astro";
 
 import { readingTime } from "@lib/utils";
 import { type CollectionEntry, getCollection } from "astro:content";
@@ -13,7 +14,7 @@ export async function getStaticPaths() {
     .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
   return posts.map((post) => ({
-    params: { slug: `blog/${post.slug}` },
+    params: { slug: post.slug },
     props: post,
   }));
 }
@@ -25,8 +26,8 @@ const { Content } = await post.render();
 
 <PageLayout title={post.data.title} description={post.data.description}>
   <div class="mx-auto max-w-screen-sm px-5">
-    <a href="/blog" class="inline-flex items-center text-primary hover:underline">
-      <Icon name="lucide:arror-left" />
+    <a href="/blog" class="inline-flex gap-4 items-center text-primary hover:underline">
+      <Icon name="lucide:arrow-left" />
       Back to Blog
     </a>
     <div class="space-y-1 my-10">
@@ -46,5 +47,8 @@ const { Content } = await post.render();
     <article class="animate prose">
       <Content />
     </article>
+    <div class="mt-8 pt-8 border-t-2">
+      <NewsletterForm />
+    </div>
   </div>
 </PageLayout>

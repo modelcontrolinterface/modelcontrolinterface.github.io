@@ -1,0 +1,18 @@
+---
+import Head from "@components/Head.astro";
+import Header from "@components/Header.astro";
+import ScrollToTop from "@components/ScrollToTop.astro";
+
+---
+
+<!doctype html>
+<html lang="en">
+  <Head />
+  <body>
+    <Header />
+    <main class="flex-1 pt-4 pb-16 fade-in">
+      <slot />
+    </main>
+    <ScrollToTop />
+  </body>
+</html>

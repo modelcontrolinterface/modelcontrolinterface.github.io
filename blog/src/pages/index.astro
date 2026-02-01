@@ -1,0 +1,53 @@
+---
+import { getCollection } from "astro:content";
+
+import Link from "@components/Link.astro";
+import BlogCard from "@components/BlogCard.astro";
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import NewsletterForm from "@components/NewsletterForm.astro";
+
+const blog = (await getCollection("blog"))
+  .filter(post => !post.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<PageLayout>
+  <div class="mx-auto max-w-screen-sm px-5">
+    <article class="pb-8 animate prose-sm">
+      <h1><b>Welcome to the MCI blog.</b></h1>
+      <p>
+        MCI (Model Control Interface) is an open-source ecosystem of software
+        that enables fast, reliable, secure, and efficient integration between
+        LLM applications and external services.
+        <a
+          href="https://modelcontrolinterface.mintlify.app/server/introduction"
+          target="_blank"
+          class="font-bold underline text-primary"
+        >
+        Read More...
+        </a>
+      </p>
+      <p>
+        This blog is an outlet for the MCI team to express our opinions, share
+        key insight, ideas, experiments, research, along side the general state
+        of the project.
+      </p>
+      <p>
+        If you are interested in the development of and research of tools
+        concerning artificial intelligence and the tools around it — consider
+        subscribing to out newsletter. Thank you.
+      </p>
+    </article>
+
+    <NewsletterForm />
+
+    <ul class="flex flex-col gap-4">
+      {blog.map(post => (
+        <li>
+          <BlogCard entry={post} />
+        </li>
+      ))}
+    </ul>
+  </div>
+</PageLayout>
