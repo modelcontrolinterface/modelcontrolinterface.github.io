@@ -14,7 +14,7 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 
 export default defineConfig({
   site: "https://modelcontrolinterface.github.io/modelcontrolinterface",
-  base: "/blog",
+  base: "/modelcontrolinterface",
   markdown: {
     shikiConfig: {
       wrap: false,
