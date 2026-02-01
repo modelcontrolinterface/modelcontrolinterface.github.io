@@ -14,14 +14,14 @@ description: "Frequent questions about MCI"
     MCI doesn't force a proprietary language (DSL) on you. It uses
     **language modules** that translate specifications into standard libraries.
 
-    This means models can write tasks in Python, JavaScript, or any language the
-    runtime supports.
+    This means models can write tasks in Python, JavaScript, or any language
+    the runtime supports.
   </Accordion>
   <Accordion title="What makes MCI more secure and observable?" icon="message-circle-question-mark">
-    MCI utilizes **interceptor modules** that function like middleware.
-    These modules can inspect every dispatch made by the code to block,
-    redirect, or log actions. For example, a Permissions Interceptor can
-    cross-reference an action against a security policy before execution.
+    MCI utilizes **interceptor modules** that function like middleware. These
+    modules can inspect every dispatch made by the code to block, redirect, or
+    log actions. For example, a Permissions Interceptor can cross-reference an
+    action against a security policy before execution.
   </Accordion>
   <Accordion title="Is MCI execution stateful?" icon="message-circle-question-mark">
     Yes. While MCP relies on the model’s limited context window to "remember"
@@ -31,13 +31,13 @@ description: "Frequent questions about MCI"
   </Accordion>
   <Accordion title="How does MCI interact with the existing MCP ecosystem?" icon="message-circle-question-mark">
     MCI is designed to complement, not replace, MCP. To MCI, MCP is simply
-    another protocol standard, much like REST or JSON-RPC. An MCI server can act
-    as a bridge to existing MCP servers, giving you the best of both worlds.
+    another protocol standard, much like REST or JSON-RPC. An MCI server can
+    act as a bridge to existing MCP servers, giving you the best of both worlds.
   </Accordion>
   <Accordion title="Is MCI trying to replace tool calling?" icon="message-circle-question-mark">
-    Not at all. MCI still utilizes tool calls, but it enables
-    **multi-step, stateful** execution. Instead of the model performing one tool
-    call at a time in a "chat" loop, it can chain and parallelize multiple calls
+    Not at all. MCI still utilizes tool calls, but it enables **multi-step,
+    stateful** execution. Instead of the model performing one tool call at a
+    time in a "chat" loop, it can chain and parallelize multiple calls
     within a single execution block.
   </Accordion>
   <Accordion title="Why not just extend MCP to do this?" icon="message-circle-question-mark">

@@ -15,87 +15,57 @@
         "icon": "book-open",
         "products": [
           {
-            "product": "MCI Server",
+            "product": "Server",
             "icon": "server-cog",
-            "description": "Central MCI proxy server for AI client - Service interaction",
+            "description": "The central MCI proxy for AI - service interaction",
             "tabs": [
               {
-                "tab": "Guide",
+                "tab": "Documentation",
                 "groups": [
                   {
-                    "group": "Get Stared",
+                    "group": "Overview",
                     "pages": [
-                      "mci-server/guide/get-started/overview",
-                      "mci-server/guide/get-started/introduction",
-                      "mci-server/guide/get-started/faq",
-                      "mci-server/guide/get-started/comparison"
+                      "server/introduction",
+                      "server/faq",
+                      "server/comparison"
                     ]
                   }
                 ]
-              },
-              {
-                "tab": "Documentation",
-                "pages": [
-                  "mci-server/documentation/quickstart"
-                ]
-              },
-              {
-                "tab": "API Reference",
-                "pages": [
-                  "mci-server/documentation/quickstart"
-                ]
               }
             ]
           },
           {
-            "product": "MCI Specification Registry",
+            "product": "Specification Registry",
             "icon": "file-cog",
-            "description": "Registry of specifications for MCI - Service integrations",
+            "description": "The registry of MCI service specifications",
             "tabs": [
               {
                 "tab": "Documentation",
-                "pages": [
-                  "mci-specification-registry/documentation/index"
-                ]
+                "pages": ["specification-registry/introduction"]
               }
             ]
           },
           {
-            "product": "MCI Module Registry",
+            "product": "Module Registry",
             "icon": "boxes",
-            "description": "Registry of modules and extensions to enhance MCI adapters and capabilities",
+            "description": "The registry of MCI modules",
             "tabs": [
               {
                 "tab": "Specification",
-                "pages": [
-                  "mci-module-registry/specification/index"
-                ]
-              },
-              {
-                "tab": "Documentation",
-                "pages": [
-                  "mci-module-registry/documentation/index"
-                ]
+                "pages": ["module-registry/introduction"]
               }
             ]
           },
           {
-            "product": "MCI Dev Tools",
+            "product": "Dev Tools",
             "icon": "wrench",
-            "description": "Tools for developing, testing and publishing specifications and modules for MCI",
+            "description": "Tools for dev, testing and publishing MCI components",
             "tabs": [
               {
                 "tab": "Specification",
-                "pages": [
-                  "mci-dev-tools/specification/index"
-                ]
+                "pages": ["dev-tools/introduction"]
               }
             ]
-          },
-          {
-            "product": "MCI Labs",
-            "icon": "test-tube",
-            "description": "Research, bench-marking and testing new tools and products for MCI and AI in general"
           }
         ]
       },
@@ -132,7 +102,7 @@
   },
   "description": "MCI (Model Control Interface) is an open-source network of software that enables fast, reliable, secure, and efficient integration between LLM applications and external services.",
   "seo": {
-    "indexing": "navigable"
+    "indexing": "all"
   },
   "metadata": {
     "timestamp": true

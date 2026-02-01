@@ -1,10 +1,16 @@
 ---
-title: 'MCIR CLI Tool'
+title: "MCIR CLI Tool"
 ---
 
-The **MCIR CLI** is a minimal command-line tool designed to publish artifacts into one or more **MCI registries**. It occupies the same conceptual space as tools like `npm publish` or container registry CLIs, but for **MCI specifications** and **MCI modules**.
+The **MCIR CLI** is a minimal command-line tool designed to publish artifacts
+into one or more **MCI registries**. It occupies the same conceptual space as
+tools like `npm publish` or container registry CLIs, but for **MCI
+specifications** and **MCI modules**.
 
-MCIR is deliberately narrow in scope. It reads local metadata, resolves referenced files, authenticates against configured registries, and submits publish requests. It is not a build system, a semantic validator, or a registry browser. It is a transport mechanism.
+MCIR is deliberately narrow in scope. It reads local metadata, resolves
+referenced files, authenticates against configured registries, and submits
+publish requests. It is not a build system, a semantic validator, or a registry
+browser. It is a transport mechanism.
 
 ## Goals and Non-Goals
 
@@ -31,34 +37,45 @@ MCIR supports **two publishable artifact types**:
 - **Modules**
 - **Specifications**
 
-Both artifact types share the same high-level publish flow, but differ in manifest shape and referenced files.
+Both artifact types share the same high-level publish flow, but differ in
+manifest shape and referenced files.
 
-Intent is explicit at the CLI level. MCIR does not infer artifact type from directory structure.
+Intent is explicit at the CLI level. MCIR does not infer artifact type from
+directory structure.
 
 ```
 mcir module push
 mcir spec push
 ```
 
-All commands operate on the **current working directory**. No path arguments are accepted.
+All commands operate on the **current working directory**. No path arguments
+are accepted.
 
 ## Artifact Manifests
 
-MCIR uses TOML *artifact manifest* files to declare publishable artifacts. These files are always local to the artifact being published and are distinct from the MCIR CLI configuration.
+MCIR uses TOML *artifact manifest* files to declare publishable artifacts.
+These files are always local to the artifact being published and are distinct
+from the MCIR CLI configuration.
 
-Only a minimal set of fields is globally required. All other metadata is treated as extensible and passed through to registries.
+Only a minimal set of fields is globally required. All other metadata is
+treated as extensible and passed through to registries.
 
-Paths declared in artifact manifests are resolved relative to the directory containing the manifest file. Only **relative paths** are permitted; resolution outside the working directory is explicitly forbidden.
+Paths declared in artifact manifests are resolved relative to the directory
+containing the manifest file. Only **relative paths** are permitted; resolution
+outside the working directory is explicitly forbidden.
 
 ### Common Metadata and Extensibility
 
-MCIR treats artifact manifests as **open documents**. Beyond required fields, manifests may contain arbitrary metadata.
+MCIR treats artifact manifests as **open documents**. Beyond required fields,
+manifests may contain arbitrary metadata.
 
-To make extensibility explicit and predictable, MCIR defines two extension mechanisms:
+To make extensibility explicit and predictable, MCIR defines two extension
+mechanisms:
 
 ### `extras`
 
-`extras` is a free-form table for **registry-agnostic metadata**. It is the canonical home for fields such as:
+`extras` is a free-form table for **registry-agnostic metadata**. It is the
+canonical home for fields such as:
 
 - Versions
 - Descriptions
@@ -68,17 +85,21 @@ To make extensibility explicit and predictable, MCIR defines two extension mecha
 - Project URLs
 - Any other non-standardized fields
 
-MCIR does not interpret or validate the contents of `extras`. The table is passed verbatim to all target registries.
+MCIR does not interpret or validate the contents of `extras`. The table is
+passed verbatim to all target registries.
 
 ### `keyed-extras`
 
 `keyed-extras` is a map of registry identifiers to per-registry metadata tables.
 
-This mechanism allows registry-specific fields without polluting the global namespace or creating conflicts between registries.
+This mechanism allows registry-specific fields without polluting the global
+namespace or creating conflicts between registries.
 
-Only the registry matching the key receives the corresponding extras table. All other registries ignore it.
+Only the registry matching the key receives the corresponding extras table. All
+other registries ignore it.
 
-MCIR enforces that fields standardized at the global level **must not** be duplicated inside `extras` or `keyed-extras`.
+MCIR enforces that fields standardized at the global level **must not** be
+duplicated inside `extras` or `keyed-extras`.
 
 ### Module Manifest (`module.toml`)
 
@@ -142,9 +163,12 @@ This example demonstrates:
 
 ### CLI Configuration File
 
-MCIR uses a separate **CLI configuration file** to store registry endpoints and authentication information. This file is global to the tool and independent of any artifact.
+MCIR uses a separate **CLI configuration file** to store registry endpoints and
+authentication information. This file is global to the tool and independent of
+any artifact.
 
-Users may point MCIR to this file using the `MCIR_CONFIG_PATH` environment variable.
+Users may point MCIR to this file using the `MCIR_CONFIG_PATH` environment
+variable.
 
 Example `mcir_config.toml`:
 
@@ -161,7 +185,8 @@ Each registry entry has a user-defined identifier and includes:
 
 ### Authentication and Login Command
 
-`mcir login` configures registry entries in the CLI configuration file. It supports both interactive and flag-based usage.
+`mcir login` configures registry entries in the CLI configuration file. It
+supports both interactive and flag-based usage.
 
 Flags:
 
@@ -172,7 +197,8 @@ Flags:
 Behavior:
 
 1. Flags override existing configuration
-2. If no token is provided, MCIR attempts to resolve it from `MCIR_TOKEN_<REGISTRY_ID>`
+2. If no token is provided, MCIR attempts to resolve it from
+  `MCIR_TOKEN_<REGISTRY_ID>`
 3. If no token is found, publish operations fail immediately
 
 This hybrid model supports local development and CI usage without ambiguity.
@@ -181,7 +207,8 @@ This hybrid model supports local development and CI usage without ambiguity.
 
 ### Explicit Artifact Namespace
 
-Artifact type is encoded directly into the command namespace. This ensures explicit intent and simplifies testing.
+Artifact type is encoded directly into the command namespace. This ensures
+explicit intent and simplifies testing.
 
 ```
 mcir login
@@ -207,7 +234,8 @@ mcir spec push
 - Exit code `0`: all publishes succeeded
 - Exit code `1`: one or more publishes failed
 
-Local errors (invalid TOML, missing files, path violations) abort immediately. Remote errors are reported per registry.
+Local errors (invalid TOML, missing files, path violations) abort immediately.
+Remote errors are reported per registry.
 
 ## Testing (Planned)
 
@@ -217,7 +245,8 @@ Local errors (invalid TOML, missing files, path violations) abort immediately. R
 
 ## Future Extensions (Out of Scope)
 
-MCIR is intentionally boring. It validates presence, not meaning. Complexity belongs in registries and artifacts, not the transport layer.
+MCIR is intentionally boring. It validates presence, not meaning. Complexity
+belongs in registries and artifacts, not the transport layer.
 
 Planned but out-of-scope features include:
 
