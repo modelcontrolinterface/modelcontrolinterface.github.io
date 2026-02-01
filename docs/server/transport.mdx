@@ -1,4 +1,9 @@
-## Transport
+---
+title: "Transport?"
+description: "The data transport layers within MCI"
+---
+
+## External Transport
 
 The MCI Server exposes a single HTTP endpoint that automatically negotiates the
 most suitable transport protocol for each client connection. This allows MCI to
@@ -30,15 +35,13 @@ results, and error signals.
     provide efficient, bidirectional communication over a single connection.
     This enables low-overhead delivery of incremental updates while execution
     is still in progress.
-
 - **SSE Fallback (HTTP/1.1)**
     For HTTP/1.1 clients, MCI transparently falls back to
     **Server-Sent Events (SSE)**. While SSE is unidirectional, it allows MCI to
     push live execution updates without polling, preserving a responsive
     execution experience for legacy clients.
 
-
-## Transport Negotiation Overview
+### Transport Negotiation Overview
 
 ```mermaid
 flowchart LR
@@ -54,3 +57,25 @@ flowchart LR
     Modern --> Client
     Legacy --> Client
 ```
+
+## Internal Transport
+
+The central MCI server needs to communicate with it's modules. For this,
+MCI uses WASI (WebAssembly System Interface).
+
+[WASI](https://wasi.dev/) (the WebAssembly System Interface) provides a way to
+compose software written in different programming languages *within the same
+process*, without relying on costly and clunky interface systems such as
+HTTP-based microservices.
+
+By standardizing how WebAssembly modules interact with the host system, WASI
+enables language-agnostic components to communicate through well-defined,
+low-overhead boundaries. This makes it possible to safely embed plugins,
+extensions, or shared logic written in different languages without network
+serialization, service orchestration, or runtime duplication.
+
+WASI is particularly well suited for projects that maintain SDKs across
+multiple languages, including client libraries and plugin-based architectures.
+A concrete example is the [Zed editor](https://zed.dev/), which uses
+WebAssembly and WASI to support a fast, secure, and extensible plugin model
+while preserving native-level performance.
