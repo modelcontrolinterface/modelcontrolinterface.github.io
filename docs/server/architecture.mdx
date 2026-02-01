@@ -90,7 +90,7 @@ execution.
   specification documents and passes the generated objects to the language
   module which take these objects and generates a **temporary, read-only
   library** representing available capabilities.
-1.1. **Mounting:** The script and generated libraries are placed into the
+2. **Mounting:** The script and generated libraries are placed into the
   **Sandbox's** shared directory based on the language and the sandbox
   environment specification.
 
@@ -110,7 +110,7 @@ the prompt to the model which generates the AI’s response.
 Once the MCI receives the script:
 
 1. **Dispatch:** The Sandbox executes the code. When the script calls a
-  function (e.g., `mci.dispatch("database.execute", { ... }, ...)`), the
+  function (e.g. `mci.dispatch("shell.exec", { ... }, ...)`), the
   request is routed through:
   **Library** → **MCI Server** → **Interceptors** → **Server Module**.
 2. **The Return Trip:** The response follows the same path back, allowing the
