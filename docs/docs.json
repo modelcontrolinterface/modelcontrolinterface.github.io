@@ -29,6 +29,10 @@
                       "server/faq",
                       "server/comparison"
                     ]
+                  },
+                  {
+                    "group": "About MCI",
+                    "pages": ["server/architecture", "server/transport"]
                   }
                 ]
               }
