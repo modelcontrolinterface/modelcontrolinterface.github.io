@@ -413,36 +413,23 @@ The residual risk is primarily infrastructure-level rather than model-level.
 
 ## Glossary
 
-**Context**
+**Context:** Textual information provided to a model as part of its prompt or
+conversation history.
 
-Textual information provided to a model as part of its prompt or conversation
-history.
+**Action:** An operation that produces side effects in the external world, such
+as writing to a database, calling an API, or executing a command.
 
-**Action**
+**Execution:** The deterministic process by which an action is carried out by a
+runtime environment, independent of model reasoning.
 
-An operation that produces side effects in the external world, such as writing
-to a database, calling an API, or executing a command.
+**Capability:** A concrete, permission-scoped operation that a system is
+allowed to perform.
 
-**Execution**
+**Sandbox:** An isolated execution environment enforcing security, resource,
+and permission boundaries.
 
-The deterministic process by which an action is carried out by a runtime
-environment, independent of model reasoning.
+**Interceptor:** Middleware that observes, modifies, or enforces policy on
+actions during execution.
 
-**Capability**
-
-A concrete, permission-scoped operation that a system is allowed to perform.
-
-**Sandbox**
-
-An isolated execution environment enforcing security, resource, and permission
-boundaries.
-
-**Interceptor**
-
-Middleware that observes, modifies, or enforces policy on actions during
-execution.
-
-**Hook**
-
-An event-driven mechanism that injects external signals or data into a system
-without explicit model requests.
+**Hook:** An event-driven mechanism that injects external signals or data into
+a system without explicit model requests.
