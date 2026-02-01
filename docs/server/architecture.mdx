@@ -12,7 +12,7 @@ structural design.
 
 MCI utilizes a centralized **Client-Proxy-Server** model. By acting as a
 unified gateway, it eliminates the need for AI applications to manage multiple
-complex integrations
+complex integrations.
 
 ```mermaid
 graph LR
@@ -51,13 +51,13 @@ Clients are the "consumers" of the architecture. An MCI client can be any
 interface, ranging from mobile apps to serverless functions, capable of
 receiving model output and executing HTTP requests.
 
-### **The MCI Server (The Proxy)**
+### **The Server (The Proxy)**
 
 The MCI Server is the central intelligence of the system. It acts as a
 **Reverse Proxy**, managing authentication, request transformation, and
 communication between the Client and the external environment.
 
-### **The End Servers (The Providers)**
+### **The Service (The Providers)**
 
 These are the functional targets that perform specific tasks or store data.
 
@@ -72,11 +72,11 @@ coordinates five distinct types of modules to process the request:
 
 | **Module Type** | **Primary Function** |
 | - | - |
-| **Sandbox**     | The secure, isolated environment (container/VM) where the script is executed. It mounts a shared directory for code and libraries.              |
-| **Server**      | Acts as the reverse proxy to specific protocols (REST, GraphQL, gRPC). It interprets standards like **OpenAPI/Swagger** to talk to end servers. |
-| **Interceptor** | Middleware functions that sit between the script and the service. Used for logging, security filtering, or request modification.                |
-| **Hook**        | Event-driven peripherals. They inject external notifications (e.g., a GitHub Webhook) directly back to the model's context.                     |
-| **Language**    | Generates language specific libraries to be used by the model to execute actions in the sandbox                                                 |
+| **Sandbox**     | The secure, isolated environment (container/VM) where the script is executed. It mounts a shared directory for code and libraries. |
+| **Server**      | Acts as the reverse proxy to specific protocols (REST, GraphQL, gRPC). It receives requests from dispatches and relays them to the end service. |
+| **Interceptor** | Middleware functions that sit between the script and the service. Used for logging, security filtering, or request modification. |
+| **Hook**        | Event-driven peripherals. They inject external notifications (e.g., a GitHub Webhook) directly back to the model's context. |
+| **Language**    | Generates language specific libraries to be used by the model to execute actions in the sandbox. |
 
 ### 0. Resolution
 
@@ -85,7 +85,7 @@ execution.
 
 1. **Library Generation:** MCI loads all is client spec files. Client spec
   files are documents tat specify a standard for communication between an MCI
-  server module and the end server. examples of these are `OpenAPI`, `OpenRPC`,
+  server module and the end server. Examples of these are `OpenAPI`, `OpenRPC`,
   `AsyncAPI` etc. MCI ten resolves active server modules that use the client
   specification documents and passes the generated objects to the language
   module which take these objects and generates a **temporary, read-only
@@ -103,7 +103,7 @@ the prompt to the model which generates the AI’s response.
   generates a **specialized MCI code block** instead of a standard JSON tool
   call.
 - **Transmission:** The Client identifies this block, extracts the script and
-  metadata, and transmits it to the **MCI** via HTTP.
+  metadata, and transmits it to the **MCI Server** via HTTP.
 
 ### 2. Execution
 
