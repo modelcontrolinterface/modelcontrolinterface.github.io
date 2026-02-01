@@ -3,7 +3,6 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [ main ]
-
   workflow_dispatch:
 
 permissions:
@@ -17,8 +16,11 @@ jobs:
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v4
+
       - name: Install, build, and upload your site
         uses: withastro/action@v3
+        with:
+          path: ./blogs
 
   deploy:
     needs: build
