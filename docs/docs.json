@@ -13,31 +13,21 @@
       {
         "anchor": "Documentation",
         "icon": "book-open",
-        "products": [
+        "tabs": [
           {
-            "product": "Server",
-            "icon": "server-cog",
-            "description": "The central MCI proxy for AI - service interaction",
-            "tabs": [
+            "tab": "Documentation",
+            "groups": [
               {
-                "tab": "Documentation",
-                "groups": [
-                  {
-                    "group": "Overview",
-                    "pages": [
-                      "server/introduction",
-                      "server/faq",
-                      "server/comparison"
-                    ]
-                  },
-                  {
-                    "group": "About MCI",
-                    "pages": [
-                      "server/architecture",
-                      "server/transport"
-                    ]
-                  }
+                "group": "Overview",
+                "pages": [
+                  "server/introduction",
+                  "server/faq",
+                  "server/comparison"
                 ]
+              },
+              {
+                "group": "About MCI",
+                "pages": ["server/architecture", "server/transport"]
               }
             ]
           }
