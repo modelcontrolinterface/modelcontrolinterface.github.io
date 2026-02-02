@@ -40,45 +40,6 @@
                 ]
               }
             ]
-          },
-          {
-            "product": "Specification Registry",
-            "icon": "file-cog",
-            "description": "The registry of MCI service specifications",
-            "tabs": [
-              {
-                "tab": "Documentation",
-                "pages": [
-                  "specification-registry/introduction"
-                ]
-              }
-            ]
-          },
-          {
-            "product": "Module Registry",
-            "icon": "boxes",
-            "description": "The registry of MCI modules",
-            "tabs": [
-              {
-                "tab": "Specification",
-                "pages": [
-                  "module-registry/introduction"
-                ]
-              }
-            ]
-          },
-          {
-            "product": "Dev Tools",
-            "icon": "wrench",
-            "description": "Tools for dev, testing and publishing MCI components",
-            "tabs": [
-              {
-                "tab": "Specification",
-                "pages": [
-                  "dev-tools/introduction"
-                ]
-              }
-            ]
           }
         ]
       },
@@ -86,6 +47,9 @@
         "anchor": "Blog",
         "icon": "newspaper",
         "href": "https://modelcontrolinterface.github.io/modelcontrolinterface/"
+      },
+      {
+        "anchor": "Lab"
       }
     ]
   },
