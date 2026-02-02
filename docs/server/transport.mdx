@@ -24,40 +24,6 @@ available option at connection time:
 Clients do not need to explicitly choose a protocol; negotiation is handled
 automatically by the transport layer.
 
-### Streaming & Real-Time Feedback
-
-Script execution inside the Sandbox may be long-running. To keep the Client
-informed, MCI streams execution progress in real time, including logs, partial
-results, and error signals.
-
-- **Native Streaming (HTTP/2 & HTTP/3)**
-    When connected over HTTP/2 or HTTP/3, MCI uses native stream framing to
-    provide efficient, bidirectional communication over a single connection.
-    This enables low-overhead delivery of incremental updates while execution
-    is still in progress.
-- **SSE Fallback (HTTP/1.1)**
-    For HTTP/1.1 clients, MCI transparently falls back to
-    **Server-Sent Events (SSE)**. While SSE is unidirectional, it allows MCI to
-    push live execution updates without polling, preserving a responsive
-    execution experience for legacy clients.
-
-### Transport Negotiation Overview
-
-```mermaid
-flowchart LR
-    Client[Client]
-    Transport[MCI Transport]
-    Modern[HTTP/2 or HTTP/3<br/>Native Streaming]
-    Legacy[HTTP/1.1<br/>SSE Streaming]
-
-    Client --> Transport
-    Transport --> Modern
-    Transport --> Legacy
-
-    Modern --> Client
-    Legacy --> Client
-```
-
 ## Internal Transport
 
 The central MCI server needs to communicate with it's modules. For this,

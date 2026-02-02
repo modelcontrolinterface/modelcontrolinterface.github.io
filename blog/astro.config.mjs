@@ -13,8 +13,8 @@ import rehypeExternalLinks from "rehype-external-links";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 
 export default defineConfig({
-  site: "https://modelcontrolinterface.github.io/modelcontrolinterface",
-  base: "/modelcontrolinterface",
+  site: "https://modelcontrolinterface.github.io",
+  base: "/blog",
   markdown: {
     shikiConfig: {
       wrap: false,
