@@ -43,7 +43,7 @@
               {
                 "version": "1.0.0",
                 "default": true,
-                "openapi": "https://raw.githubusercontent.com/modelcontrolinterface/modelcontrolinterface.github.io/refs/heads/main/docs/assets/server.openapi.json"
+                "openapi": "https://gist.githubusercontent.com/0x15BA88FF/f3e953fddcf9db3817efd8ee2da06072/raw/2eb470b6c72ec474870321953476008b15f364a9/mci.json"
               }
             ]
           }
