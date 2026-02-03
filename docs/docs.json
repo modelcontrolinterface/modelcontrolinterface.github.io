@@ -43,7 +43,7 @@
               {
                 "version": "1.0.0",
                 "default": true,
-                "openapi": "https://petstore3.swagger.io/api/v3/openapi.json"
+                "openapi": "https://raw.githubusercontent.com/modelcontrolinterface/modelcontrolinterface.github.io/refs/heads/main/docs/assets/server.openapi.json"
               }
             ]
           }
