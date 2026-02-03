@@ -39,7 +39,13 @@
           },
           {
             "tab": "API Reference",
-            "openapi": "https://petstore3.swagger.io/api/v3/openapi.json"
+            "versions": [
+              {
+                "version": "1.0.0",
+                "default": true,
+                "openapi": "https://petstore3.swagger.io/api/v3/openapi.json"
+              }
+            ]
           }
         ]
       },
