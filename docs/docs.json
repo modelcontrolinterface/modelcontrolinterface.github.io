@@ -98,7 +98,8 @@
   "api": {
     "playground": {
       "display": "interactive"
-    }
+    },
+    "openapi": "/server.openapi.json"
   },
   "background": {
     "decoration": "grid",
