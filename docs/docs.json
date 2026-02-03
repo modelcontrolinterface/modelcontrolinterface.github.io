@@ -27,7 +27,13 @@
               },
               {
                 "group": "About MCI",
-                "pages": ["server/architecture", "server/transport"]
+                "pages": [
+                  "server/architecture",
+                  "server/transport",
+                  "server/module",
+                  "server/specification",
+                  "server/task"
+                ]
               }
             ]
           }
