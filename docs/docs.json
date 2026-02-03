@@ -15,6 +15,9 @@
         "icon": "book-open",
         "tabs": [
           {
+            "tab": "API Reference"
+          },
+          {
             "tab": "Documentation",
             "groups": [
               {
