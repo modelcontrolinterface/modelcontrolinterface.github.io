@@ -99,7 +99,7 @@
     "playground": {
       "display": "interactive"
     },
-    "openapi": "/server.openapi.json"
+    "openapi": "/openapi.json"
   },
   "background": {
     "decoration": "grid",
