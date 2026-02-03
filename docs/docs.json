@@ -31,8 +31,8 @@
                   "server/architecture",
                   "server/transport",
                   "server/module",
-                  "server/specification",
-                  "server/task"
+                  "server/definition",
+                  "server/process"
                 ]
               }
             ]

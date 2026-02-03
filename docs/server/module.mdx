@@ -1,6 +1,6 @@
 ---
 title: "What are MCI Modules?"
-description: "An overview of MCI Modules and their role"
+description: "An top-level description of modules and their role in MCI"
 ---
 
 MCI (Modular Computing Interface) is, at its core, a server and runtime
@@ -50,7 +50,7 @@ server address.
 ## Proxy Modules
 
 Each proxy module enables communication over specific protocols with defined
-specifications. For example, a proxy might handle `REST` endpoints over `HTTP`.
+definition. For example, a proxy might handle `REST` endpoints over `HTTP`.
 
 Proxy modules must implement two capabilities:
 
@@ -58,7 +58,7 @@ Proxy modules must implement two capabilities:
   instances. Each proxy acts as a client-server hybrid that transforms MCI
   calls into appropriate requests for target servers.
 
-2. **Specification Translation**: Ingest specification files (e.g., `OpenAPI`)
+2. **Definition Translation**: Ingest specification files (e.g., `OpenAPI`)
   and return structured data describing available requests, expected responses,
   and schemas. This structure enables generation of language-specific library
   bindings.
@@ -72,7 +72,7 @@ on-the-fly modifications during transit.
 ## Language Modules
 
 Language modules generate the libraries that models use to perform actions.
-They consume specification data from proxy translations and convert it into
+They consume definition data from proxy translations and convert it into
 language-specific bindings. MCI manages these libraries as files that sandbox
 modules reference during execution. Before running code, MCI injects the
 appropriate library, enabling dispatches back to the MCI server.
