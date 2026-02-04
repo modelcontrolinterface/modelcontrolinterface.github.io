@@ -46,41 +46,87 @@
             }
           }
         }
+      },
+      "clientId": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Client-ID",
+        "description": "Client ID to distinguish between different client applications"
+      },
+      "apiToken": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Token",
+        "description": "API token for service-tqueriesnao-service authentication"
       }
     },
     "schemas": {
       "Process": {
         "type": "object",
-        "required": ["code"],
+        "required": ["code", "environment"],
         "properties": {
           "pid": {
             "type": "integer",
             "format": "int64",
+            "readOnly": true,
             "examples": [101]
           },
-          "name": { "type": "string" },
-          "description": { "type": "string" },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
           "status": {
             "type": "string",
             "readOnly": true,
-            "enum": ["idle", "running", "queued"],
-            "description": "The current live state of the process."
+            "enum": ["queued", "running", "complete"],
+            "description": "The current state of the process."
           },
           "exit_state": {
             "type": "string",
-            "enum": ["success", "failed", "terminated"],
             "readOnly": true,
-            "description": "The result of the last execution. Null if the process has never run or is currently running."
+            "enum": ["success", "failed", "terminated"],
+            "description": "The result of the last execution."
           },
-          "code": { "type": "string" },
-          "environment": { "type": "string" },
+          "code": {
+            "type": "string"
+          },
+          "environment": {
+            "type": "string"
+          },
           "extras": {
             "type": "object",
-            "additionalProperties": { "type": "string" }
+            "additionalProperties": {
+              "type": "string"
+            }
           },
-          "save": { "type": "boolean", "writeOnly": true, "default": false },
-          "lint": { "type": "boolean", "writeOnly": true, "default": false },
-          "run": { "type": "boolean", "writeOnly": true, "default": true }
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "description": "Timestamp when the process was created.",
+            "examples": ["2026-02-04T10:30:00Z"]
+          },
+          "completed_at": {
+            "type": ["null", "string"],
+            "format": "date-time",
+            "readOnly": true,
+            "description": "Timestamp when the process completed execution. Null if the process has never completed or is currently running.",
+            "examples": ["2026-02-04T10:35:45Z"]
+          },
+          "save": {
+            "type": "boolean",
+            "default": false
+          },
+          "lint": {
+            "type": "boolean",
+            "default": false
+          },
+          "run": {
+            "type": "boolean",
+            "default": true
+          }
         }
       },
       "Definition": {
@@ -112,82 +158,28 @@
             "type": "string",
             "format": "binary",
             "description": "The actual file content of the specification file."
-          }
-        }
-      },
-      "DefinitionCreate": {
-        "type": "object",
-        "required": ["id", "name", "type", "specification_file"],
-        "properties": {
-          "id": {
-            "type": "string",
-            "pattern": "^[a-zA-Z0-9-_]+$",
-            "description": "Unique slug for the definition.",
-            "examples": ["model-control-v1_stable"]
           },
-          "name": {
+          "source_url": {
             "type": "string",
-            "description": "A human-readable name for the definition.",
-            "examples": ["Data Processor v2"]
-          },
-          "description": {
-            "type": "string",
-            "description": "A detailed explanation of what this definition handles.",
-            "examples": ["Standard ETL definition for processing CSV uploads."]
-          },
-          "type": {
-            "type": "string",
-            "description": "The format or category of the definition.",
-            "examples": ["openapi"]
-          },
-          "specification_file": {
-            "type": "string",
-            "format": "binary",
-            "writeOnly": true,
-            "description": "The actual file content of the specification file."
-          }
-        }
-      },
-      "DefinitionUpdate": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "A human-readable name for the definition.",
-            "examples": ["Data Processor v2"]
-          },
-          "description": {
-            "type": "string",
-            "description": "A detailed explanation of what this definition handles.",
-            "examples": ["Standard ETL definition for processing CSV uploads."]
-          },
-          "type": {
-            "type": "string",
-            "description": "The format or category of the definition.",
-            "examples": ["openapi"]
-          },
-          "specification_file": {
-            "type": "string",
-            "format": "binary",
-            "writeOnly": true,
-            "description": "The actual file content of the specification file."
+            "format": "uri",
+            "description": "Optional URL where this definition was fetched from (for registry-installed definitions).",
+            "examples": [
+              "https://registry.example.com/api/definitions/model-control-v1_stable"
+            ]
           }
         }
       },
       "InstallRequest": {
         "type": "object",
-        "required": ["registry_url", "package_id"],
+        "required": ["url"],
         "properties": {
-          "registry_url": {
+          "url": {
             "type": "string",
             "format": "uri",
-            "description": "The URL of the registry to fetch the package from.",
-            "examples": ["https://registry.example.com"]
-          },
-          "package_id": {
-            "type": "string",
-            "description": "The unique identifier of the package in the registry.",
-            "examples": ["model-control-v1_stable"]
+            "description": "The direct URL to the API endpoint containing the definition/module metadata and files.",
+            "examples": [
+              "https://registry.example.com/api/definitions/model-control-v1_stable"
+            ]
           }
         }
       },
@@ -221,100 +213,195 @@
             "type": "string",
             "format": "binary",
             "description": "The actual file content of the wasm file."
-          }
-        }
-      },
-      "ModuleCreate": {
-        "type": "object",
-        "required": ["id", "name", "type", "wasm_file"],
-        "properties": {
-          "id": {
-            "type": "string",
-            "pattern": "^[a-zA-Z0-9-_]+$",
-            "description": "Unique slug for the module.",
-            "examples": ["docker_sandbox"]
           },
-          "name": {
+          "source_url": {
             "type": "string",
-            "description": "A human-readable name for the module.",
-            "examples": ["Docker Sandbox"]
-          },
-          "description": {
-            "type": "string",
-            "description": "A detailed explanation of what this module handles.",
-            "examples": ["Docker based sandbox environment"]
-          },
-          "type": {
-            "type": "string",
-            "enum": ["sandbox", "language", "proxy", "interceptor", "hook"],
-            "description": "The format or category of the module.",
-            "examples": ["sandbox"]
-          },
-          "wasm_file": {
-            "type": "string",
-            "format": "binary",
-            "writeOnly": true,
-            "description": "The actual file content of the wasm file."
-          }
-        }
-      },
-      "ModuleUpdate": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "A human-readable name for the module.",
-            "examples": ["Docker Sandbox"]
-          },
-          "description": {
-            "type": "string",
-            "description": "A detailed explanation of what this module handles.",
-            "examples": ["Docker based sandbox environment"]
-          },
-          "type": {
-            "type": "string",
-            "enum": ["sandbox", "language", "proxy", "interceptor", "hook"],
-            "description": "The format or category of the module.",
-            "examples": ["sandbox"]
-          },
-          "wasm_file": {
-            "type": "string",
-            "format": "binary",
-            "writeOnly": true,
-            "description": "The actual file content of the wasm file."
+            "format": "uri",
+            "description": "Optional URL where this module was fetched from (for registry-installed modules).",
+            "examples": [
+              "https://registry.example.com/api/modules/docker_sandbox"
+            ]
           }
         }
       },
       "LogResponse": {
         "type": "object",
-        "readOnly": true,
         "properties": {
-          "stdout": { "type": "string" },
-          "stderr": { "type": "string" },
-          "timestamp": { "type": "string", "format": "date-time" }
+          "stdout": {
+            "type": "string"
+          },
+          "stderr": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "Error": {
         "type": "object",
-        "readOnly": true,
         "properties": {
-          "error": { "type": "string", "examples": ["Conflict"] },
+          "error": {
+            "type": "string",
+            "examples": ["Conflict"]
+          },
           "message": {
             "type": "string",
             "examples": [
               "Cannot delete a process while it is in the 'running' state."
             ]
           },
-          "details": { "type": "object" }
+          "details": {
+            "type": "object"
+          }
         }
       }
     }
   },
+  "security": [
+    {
+      "mci_auth": [],
+      "clientId": []
+    },
+    {
+      "apiToken": [],
+      "clientId": []
+    }
+  ],
   "paths": {
     "/processes": {
       "get": {
         "tags": ["process"],
         "summary": "List all processes",
+        "description": "Retrieve a list of processes with optional filtering and pagination.",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter processes by query name and description"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["idle", "running", "paused"]
+            },
+            "description": "Filter processes by status"
+          },
+          {
+            "name": "exit_state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["success", "failed", "terminated"]
+            },
+            "description": "Filter processes by exit state"
+          },
+          {
+            "name": "environment",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter processes by environment"
+          },
+          {
+            "name": "created_after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Filter processes created after this timestamp",
+            "example": "2026-02-01T00:00:00Z"
+          },
+          {
+            "name": "created_before",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Filter processes created before this timestamp",
+            "example": "2026-02-04T23:59:59Z"
+          },
+          {
+            "name": "completed_after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Filter processes completed after this timestamp"
+          },
+          {
+            "name": "completed_before",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Filter processes completed before this timestamp"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "description": "Maximum number of results to return"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            },
+            "description": "Number of results to skip (for pagination)"
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["created_at", "completed_at", "name", "pid"],
+              "default": "created_at"
+            },
+            "description": "Field to sort by"
+          },
+          {
+            "name": "sort_order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "desc"
+            },
+            "description": "Sort order (ascending or descending)"
+          }
+        ],
         "responses": {
           "200": {
             "description": "A list of processes.",
@@ -322,7 +409,9 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/Process" }
+                  "items": {
+                    "$ref": "#/components/schemas/Process"
+                  }
                 }
               }
             }
@@ -336,7 +425,9 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/Process" }
+              "schema": {
+                "$ref": "#/components/schemas/Process"
+              }
             }
           }
         },
@@ -345,7 +436,9 @@
             "description": "Process created/initiated.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Process" }
+                "schema": {
+                  "$ref": "#/components/schemas/Process"
+                }
               }
             }
           },
@@ -353,7 +446,135 @@
             "description": "Linting failure.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/processes/{pid}": {
+      "get": {
+        "tags": ["process"],
+        "summary": "Get process details",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Process state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Process"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found."
+          }
+        }
+      },
+      "put": {
+        "tags": ["process"],
+        "summary": "Modify process",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Process"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated."
+          },
+          "409": {
+            "description": "Conflict: Cannot modify running process.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["process"],
+        "summary": "Delete process",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted successfully."
+          },
+          "409": {
+            "description": "Conflict: Cannot delete running process.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/processes/{pid}/logs": {
+      "get": {
+        "tags": ["process"],
+        "summary": "Get process logs",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogResponse"
+                }
               }
             }
           }
@@ -392,9 +613,69 @@
             "description": "Process not found.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
+          }
+        }
+      }
+    },
+    "/processes/{pid}/signal": {
+      "post": {
+        "tags": ["process"],
+        "summary": "Send a signal to a process",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["signal"],
+                "properties": {
+                  "signal": {
+                    "type": "string",
+                    "enum": ["kill", "pause", "restart"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Signal sent successfully."
+          }
+        }
+      }
+    },
+    "/processes/{pid}/start": {
+      "post": {
+        "tags": ["process"],
+        "summary": "Start idle process",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Started successfully."
           }
         }
       }
@@ -410,7 +691,9 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/Definition" }
+                  "items": {
+                    "$ref": "#/components/schemas/Definition"
+                  }
                 }
               }
             }
@@ -424,7 +707,9 @@
           "required": true,
           "content": {
             "multipart/form-data": {
-              "schema": { "$ref": "#/components/schemas/DefinitionCreate" }
+              "schema": {
+                "$ref": "#/components/schemas/Definition"
+              }
             }
           }
         },
@@ -433,7 +718,9 @@
             "description": "Definition created successfully.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Definition" }
+                "schema": {
+                  "$ref": "#/components/schemas/Definition"
+                }
               }
             }
           },
@@ -441,7 +728,9 @@
             "description": "Invalid request.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           },
@@ -449,7 +738,9 @@
             "description": "Definition with this ID already exists.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           }
@@ -477,7 +768,9 @@
             "description": "Definition data including metadata and specification file.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Definition" }
+                "schema": {
+                  "$ref": "#/components/schemas/Definition"
+                }
               }
             }
           },
@@ -485,7 +778,9 @@
             "description": "Definition not found.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           }
@@ -509,7 +804,9 @@
           "required": true,
           "content": {
             "multipart/form-data": {
-              "schema": { "$ref": "#/components/schemas/DefinitionUpdate" }
+              "schema": {
+                "$ref": "#/components/schemas/Definition"
+              }
             }
           }
         },
@@ -518,7 +815,9 @@
             "description": "Definition updated successfully.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Definition" }
+                "schema": {
+                  "$ref": "#/components/schemas/Definition"
+                }
               }
             }
           },
@@ -526,7 +825,9 @@
             "description": "Invalid request.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           },
@@ -534,7 +835,9 @@
             "description": "Definition not found.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           }
@@ -562,7 +865,9 @@
             "description": "Definition not found.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           },
@@ -570,7 +875,69 @@
             "description": "Cannot delete definition (e.g., in use by processes).",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/definitions/{id}/update": {
+      "post": {
+        "tags": ["definition"],
+        "summary": "Update definition from source URL",
+        "description": "Updates the definition by fetching the latest version from its source_url.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The definition ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Definition updated successfully from source.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Definition"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Definition does not have a source_url.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Definition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Failed to fetch from source URL.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           }
@@ -580,13 +947,15 @@
     "/definitions/install": {
       "post": {
         "tags": ["definition"],
-        "summary": "Install a definition from a registry",
-        "description": "Automatically downloads, validates, and installs a definition from a specified registry.",
+        "summary": "Install a definition from a URL",
+        "description": "Automatically downloads, validates, and installs a definition from a specified URL.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/InstallRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/InstallRequest"
+              }
             }
           }
         },
@@ -595,7 +964,9 @@
             "description": "Definition installed successfully.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Definition" }
+                "schema": {
+                  "$ref": "#/components/schemas/Definition"
+                }
               }
             }
           },
@@ -603,7 +974,9 @@
             "description": "Invalid request or validation failure.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           },
@@ -611,15 +984,19 @@
             "description": "Definition already exists.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           },
           "502": {
-            "description": "Failed to fetch from registry.",
+            "description": "Failed to fetch from URL.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           }
@@ -637,7 +1014,9 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/Module" }
+                  "items": {
+                    "$ref": "#/components/schemas/Module"
+                  }
                 }
               }
             }
@@ -651,7 +1030,9 @@
           "required": true,
           "content": {
             "multipart/form-data": {
-              "schema": { "$ref": "#/components/schemas/ModuleCreate" }
+              "schema": {
+                "$ref": "#/components/schemas/Module"
+              }
             }
           }
         },
@@ -660,7 +1041,9 @@
             "description": "Module created successfully.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Module" }
+                "schema": {
+                  "$ref": "#/components/schemas/Module"
+                }
               }
             }
           },
@@ -668,7 +1051,9 @@
             "description": "Invalid request.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           },
@@ -676,7 +1061,9 @@
             "description": "Module with this ID already exists.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           }
@@ -704,7 +1091,9 @@
             "description": "Module data including metadata and WASM file.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Module" }
+                "schema": {
+                  "$ref": "#/components/schemas/Module"
+                }
               }
             }
           },
@@ -712,7 +1101,9 @@
             "description": "Module not found.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           }
@@ -736,7 +1127,9 @@
           "required": true,
           "content": {
             "multipart/form-data": {
-              "schema": { "$ref": "#/components/schemas/ModuleUpdate" }
+              "schema": {
+                "$ref": "#/components/schemas/Module"
+              }
             }
           }
         },
@@ -745,7 +1138,9 @@
             "description": "Module updated successfully.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Module" }
+                "schema": {
+                  "$ref": "#/components/schemas/Module"
+                }
               }
             }
           },
@@ -753,7 +1148,9 @@
             "description": "Invalid request.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           },
@@ -761,7 +1158,9 @@
             "description": "Module not found.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           }
@@ -789,7 +1188,9 @@
             "description": "Module not found.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           },
@@ -797,7 +1198,69 @@
             "description": "Cannot delete module (e.g., in use by processes).",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/modules/{id}/update": {
+      "post": {
+        "tags": ["module"],
+        "summary": "Update module from source URL",
+        "description": "Updates the module by fetching the latest version from its source_url.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The module ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Module updated successfully from source.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Module"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Module does not have a source_url.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Module not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Failed to fetch from source URL.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           }
@@ -807,13 +1270,15 @@
     "/modules/install": {
       "post": {
         "tags": ["module"],
-        "summary": "Install a module from a registry",
-        "description": "Automatically downloads, validates, and installs a module from a specified registry.",
+        "summary": "Install a module from a URL",
+        "description": "Automatically downloads, validates, and installs a module from a specified URL.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/InstallRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/InstallRequest"
+              }
             }
           }
         },
@@ -822,7 +1287,9 @@
             "description": "Module installed successfully.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Module" }
+                "schema": {
+                  "$ref": "#/components/schemas/Module"
+                }
               }
             }
           },
@@ -830,7 +1297,9 @@
             "description": "Invalid request or validation failure.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           },
@@ -838,15 +1307,19 @@
             "description": "Module already exists.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           },
           "502": {
-            "description": "Failed to fetch from registry.",
+            "description": "Failed to fetch from URL.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           }
