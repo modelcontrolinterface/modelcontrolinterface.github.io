@@ -1,0 +1,1367 @@
+openapi: 3.1.0
+info:
+  title: Model Control Interface
+  description: Control and monitor executable units with linting and persistence options.
+  version: 1.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/license/mit
+servers:
+- url: http://petstore.swagger.io/v2
+  description: Production server
+tags:
+- name: process
+  description: Management of executable units
+- name: definition
+  description: Management of API definitions
+- name: module
+  description: Management of WASM modules
+components:
+  securitySchemes:
+    mci_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: http://petstore.swagger.io/oauth/dialog
+          scopes:
+            write:processes: modify processes
+            read:processes: read processes
+            write:definitions: modify definitions
+            read:definitions: read definitions
+            write:modules: modify modules
+            read:modules: read modules
+    clientId:
+      type: apiKey
+      in: header
+      name: X-Client-ID
+      description: Client ID to distinguish between different client applications
+    apiToken:
+      type: apiKey
+      in: header
+      name: X-API-Token
+      description: API token for service-to-service authentication
+  schemas:
+    Process:
+      type: object
+      required:
+      - code
+      - environment
+      properties:
+        pid:
+          type: integer
+          format: int64
+          readOnly: true
+          description: Unique process identifier assigned by the system
+          examples:
+          - value:101
+        name:
+          type: string
+          description: Human-readable name for the process
+          examples:
+          - Data ETL Pipeline
+        description:
+          type: string
+          description: Detailed description of what this process does
+          examples:
+          - Processes customer data from CSV files and loads into the database
+        status:
+          type: string
+          readOnly: true
+          enum:
+          - queued
+          - running
+          - complete
+          description: The current execution state of the process
+          examples:
+          - running
+        exit_state:
+          type: string
+          readOnly: true
+          enum:
+          - success
+          - failed
+          - terminated
+          description: The final outcome of the process execution. Only present after
+            completion.
+          examples:
+          - success
+        code:
+          type: string
+          description: The executable code or script for the process
+          examples:
+          - print('Hello World')
+        environment:
+          type: string
+          description: The runtime environment identifier (e.g., python, node, bash)
+          examples:
+          - python3.11
+        extras:
+          type: object
+          additionalProperties:
+            type: string
+          description: Additional metadata or configuration key-value pairs
+          examples:
+          - timeout: '300'
+            memory_limit: 2GB
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: ISO 8601 timestamp when the process was created
+          examples:
+          - '2026-02-04T10:30:00Z'
+        completed_at:
+          type:
+          - 'null'
+          - string
+          format: date-time
+          readOnly: true
+          description: ISO 8601 timestamp when the process completed. Null if never
+            completed or currently running.
+          examples:
+          - '2026-02-04T10:35:45Z'
+        save:
+          type: boolean
+          default: false
+          description: Whether to persist this process for future reference
+          examples:
+          - true
+        lint:
+          type: boolean
+          default: false
+          description: Whether to perform linting/validation on the code before execution
+          examples:
+          - true
+        run:
+          type: boolean
+          default: true
+          description: Whether to immediately execute the process upon creation
+          examples:
+          - true
+    ProcessUpdate:
+      type: object
+      description: Partial update schema for processes. All fields are optional.
+      properties:
+        name:
+          type: string
+          description: Human-readable name for the process
+          examples:
+          - Data ETL Pipeline v2
+        description:
+          type: string
+          description: Detailed description of what this process does
+          examples:
+          - Enhanced pipeline with error handling
+        code:
+          type: string
+          description: The executable code or script for the process
+          examples:
+          - print('Hello World v2')
+        environment:
+          type: string
+          description: The runtime environment identifier
+          examples:
+          - python3.12
+        extras:
+          type: object
+          additionalProperties:
+            type: string
+          description: Additional metadata or configuration key-value pairs
+          examples:
+          - timeout: '600'
+        save:
+          type: boolean
+          description: Whether to persist this process
+          examples:
+          - true
+        lint:
+          type: boolean
+          description: Whether to perform linting/validation
+          examples:
+          - false
+    Definition:
+      type: object
+      required:
+      - id
+      - name
+      - type
+      - specification_file
+      properties:
+        id:
+          type: string
+          pattern: ^[a-zA-Z0-9-_]+$
+          description: Unique identifier slug for the definition (alphanumeric, hyphens,
+            and underscores only)
+          examples:
+          - payment-api-v2
+        name:
+          type: string
+          description: Human-readable display name for the definition
+          examples:
+          - Payment Processing API v2
+        description:
+          type: string
+          description: Comprehensive explanation of the definition's purpose and functionality
+          examples:
+          - REST API specification for payment processing with support for credit
+            cards, ACH, and digital wallets
+        type:
+          type: string
+          description: The specification format or schema type
+          examples:
+          - openapi
+        specification_file:
+          type: string
+          format: binary
+          description: The binary content of the specification file (e.g., OpenAPI
+            YAML/JSON, GraphQL schema)
+        source_url:
+          type: string
+          format: uri
+          description: Original URL where this definition was installed from. Populated
+            automatically for registry-installed definitions. Used by the update endpoint.
+          examples:
+          - https://registry.example.com/api/definitions/payment-api-v2
+    DefinitionUpdate:
+      type: object
+      description: Partial update schema for definitions. All fields are optional.
+      properties:
+        name:
+          type: string
+          description: Human-readable display name for the definition
+          examples:
+          - Payment Processing API v2.1
+        description:
+          type: string
+          description: Comprehensive explanation of the definition's purpose
+          examples:
+          - Updated API with cryptocurrency support
+        type:
+          type: string
+          description: The specification format or schema type
+          examples:
+          - openapi
+        specification_file:
+          type: string
+          format: binary
+          description: The binary content of the specification file
+    InstallRequest:
+      type: object
+      required:
+      - url
+      properties:
+        url:
+          type: string
+          format: uri
+          description: Direct URL to the API endpoint that returns the complete definition
+            or module data (including metadata and files)
+          examples:
+          - https://registry.example.com/api/definitions/payment-api-v2
+    Module:
+      type: object
+      required:
+      - id
+      - name
+      - type
+      - wasm_file
+      properties:
+        id:
+          type: string
+          pattern: ^[a-zA-Z0-9-_]+$
+          description: Unique identifier slug for the module (alphanumeric, hyphens,
+            and underscores only)
+          examples:
+          - docker-sandbox-v1
+        name:
+          type: string
+          description: Human-readable display name for the module
+          examples:
+          - Docker Sandbox Runtime
+        description:
+          type: string
+          description: Comprehensive explanation of the module's functionality and
+            use cases
+          examples:
+          - Isolated Docker-based sandbox environment for executing untrusted code
+            with resource limits and network restrictions
+        type:
+          type: string
+          enum:
+          - sandbox
+          - language
+          - proxy
+          - interceptor
+          - hook
+          description: The functional category of the module (sandbox=execution environment,
+            language=runtime, proxy=network proxy, interceptor=request interceptor,
+            hook=lifecycle hook)
+          examples:
+          - sandbox
+        wasm_file:
+          type: string
+          format: binary
+          description: The compiled WebAssembly binary file containing the module
+            implementation
+        source_url:
+          type: string
+          format: uri
+          description: Original URL where this module was installed from. Populated
+            automatically for registry-installed modules. Used by the update endpoint.
+          examples:
+          - https://registry.example.com/api/modules/docker-sandbox-v1
+    ModuleUpdate:
+      type: object
+      description: Partial update schema for modules. All fields are optional.
+      properties:
+        name:
+          type: string
+          description: Human-readable display name for the module
+          examples:
+          - Docker Sandbox Runtime v2
+        description:
+          type: string
+          description: Comprehensive explanation of the module's functionality
+          examples:
+          - Enhanced sandbox with GPU support
+        type:
+          type: string
+          enum:
+          - sandbox
+          - language
+          - proxy
+          - interceptor
+          - hook
+          description: The functional category of the module
+          examples:
+          - sandbox
+        wasm_file:
+          type: string
+          format: binary
+          description: The compiled WebAssembly binary file
+    LogResponse:
+      type: object
+      properties:
+        stdout:
+          type: string
+          description: Standard output from the process execution
+          examples:
+          - 'Processing 1000 records...
+
+            Completed successfully'
+        stderr:
+          type: string
+          description: Standard error output from the process execution
+          examples:
+          - 'Warning: Deprecated API usage detected'
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the logs were captured
+          examples:
+          - '2026-02-04T10:35:30Z'
+    ProcessOutput:
+      type: object
+      description: Dynamic output object from process execution. Structure varies
+        based on process implementation.
+      additionalProperties: true
+      examples:
+      - result: success
+        records_processed: 1000
+        duration_ms: 4523
+        output_file: /data/output.csv
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Short error type or category
+          examples:
+          - Conflict
+        message:
+          type: string
+          description: Human-readable error message explaining what went wrong
+          examples:
+          - Cannot delete a process while it is in the 'running' state.
+        details:
+          type: object
+          description: Additional structured error details or context
+          examples:
+          - process_id: 101
+            current_status: running
+security:
+- mci_auth: []
+  clientId: []
+- apiToken: []
+  clientId: []
+paths:
+  /processes:
+    get:
+      tags:
+      - process
+      summary: List all processes
+      description: Retrieve a paginated list of processes with optional filtering
+        by status, environment, dates, and search query. Supports sorting and pagination.
+      parameters:
+      - name: query
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Search query to filter processes by name, description, or ID
+          (partial match, case-insensitive)
+        examples:
+        - ETL pipeline
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - queued
+          - running
+          - complete
+        description: Filter processes by current execution status
+        examples:
+        - running
+      - name: exit_state
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - success
+          - failed
+          - terminated
+        description: Filter processes by their final execution outcome
+        examples:
+        - success
+      - name: environment
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter processes by runtime environment
+        examples:
+        - python3.11
+      - name: created_after
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Filter processes created after this ISO 8601 timestamp (inclusive)
+        examples:
+        - '2026-02-01T00:00:00Z'
+      - name: created_before
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Filter processes created before this ISO 8601 timestamp (inclusive)
+        examples:
+        - '2026-02-04T23:59:59Z'
+      - name: completed_after
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Filter processes completed after this ISO 8601 timestamp (inclusive)
+        examples:
+        - '2026-02-03T00:00:00Z'
+      - name: completed_before
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Filter processes completed before this ISO 8601 timestamp (inclusive)
+        examples:
+        - '2026-02-04T23:59:59Z'
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+          minimum: 1
+          maximum: 100
+        description: Maximum number of results to return per page
+        examples:
+        - 20
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          minimum: 0
+        description: Number of results to skip (for pagination). Use with limit to
+          paginate through results.
+        examples:
+        - 40
+      - name: sort_by
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - created_at
+          - completed_at
+          - name
+          - pid
+          default: created_at
+        description: Field to sort results by
+        examples:
+        - created_at
+      - name: sort_order
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+        description: Sort direction - ascending (oldest/lowest first) or descending
+          (newest/highest first)
+        examples:
+        - desc
+      responses:
+        '200':
+          description: A list of processes matching the filter criteria.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Process'
+    post:
+      tags:
+      - process
+      summary: Create and optionally run a process
+      description: Create a new process with the provided code and configuration.
+        Optionally lint and/or execute immediately.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Process'
+      responses:
+        '201':
+          description: Process created and initiated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Process'
+        '422':
+          description: Linting or validation failure. The code contains errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /processes/{pid}:
+    get:
+      tags:
+      - process
+      summary: Get process details
+      description: Retrieve complete information about a specific process including
+        its current state, metadata, and timestamps.
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: The unique process identifier
+        examples:
+        - 101
+      responses:
+        '200':
+          description: Process details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Process'
+        '404':
+          description: Process not found with the specified PID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+      - process
+      summary: Update process (partial update)
+      description: Partially update an existing process. Only provided fields will
+        be updated. Cannot modify a running process.
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: The unique process identifier
+        examples:
+        - 101
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProcessUpdate'
+      responses:
+        '200':
+          description: Process updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Process'
+        '409':
+          description: 'Conflict: Cannot modify a process that is currently running.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Process not found with the specified PID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+      - process
+      summary: Delete process
+      description: Permanently delete a process. Cannot delete a running process -
+        it must be terminated first.
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: The unique process identifier
+        examples:
+        - 101
+      responses:
+        '204':
+          description: Process deleted successfully.
+        '409':
+          description: 'Conflict: Cannot delete a process that is currently running.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Process not found with the specified PID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /processes/{pid}/logs:
+    get:
+      tags:
+      - process
+      summary: Get process execution logs
+      description: Retrieve the stdout, stderr, and timestamp for a process's execution
+        logs.
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: The unique process identifier
+        examples:
+        - 101
+      responses:
+        '200':
+          description: Logs retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogResponse'
+        '404':
+          description: Process not found with the specified PID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /processes/{pid}/output:
+    get:
+      tags:
+      - process
+      summary: Get process output data
+      description: Retrieve the structured output data produced by the process (not
+        execution logs). The structure is dynamic and depends on the process implementation.
+        May support streaming in future versions.
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The unique process identifier
+        examples:
+        - 101
+      responses:
+        '200':
+          description: Process output retrieved successfully. Structure varies by
+            process.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessOutput'
+        '404':
+          description: Process not found with the specified PID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /processes/{pid}/signal:
+    post:
+      tags:
+      - process
+      summary: Send a signal to a process
+      description: Send control signals to manage process lifecycle (kill, instantiate,
+        restart).
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: The unique process identifier
+        examples:
+        - 101
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - signal
+              properties:
+                signal:
+                  type: string
+                  enum:
+                  - kill
+                  - instantiate
+                  - restart
+                  description: 'Control signal: kill (terminate immediately), instantiate
+                    (initialize without running), restart (stop and start)'
+                  examples:
+                  - restart
+      responses:
+        '200':
+          description: Signal sent successfully and process responded.
+        '404':
+          description: Process not found with the specified PID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /definitions:
+    get:
+      tags:
+      - definition
+      summary: List all definitions
+      description: Retrieve a paginated list of API definitions with optional filtering
+        by type and search query. Supports sorting and pagination.
+      parameters:
+      - name: query
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Search query to filter definitions by ID, name, or description
+          (partial match, case-insensitive)
+        examples:
+        - payment api
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter definitions by specification format/type
+        examples:
+        - openapi
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+          minimum: 1
+          maximum: 100
+        description: Maximum number of results to return per page
+        examples:
+        - 25
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          minimum: 0
+        description: Number of results to skip (for pagination)
+        examples:
+        - 0
+      - name: sort_by
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - id
+          - name
+          - type
+          default: name
+        description: Field to sort results by
+        examples:
+        - name
+      - name: sort_order
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: asc
+        description: Sort direction - ascending or descending
+        examples:
+        - asc
+      responses:
+        '200':
+          description: A list of definitions matching the filter criteria.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Definition'
+    post:
+      tags:
+      - definition
+      summary: Create a new definition
+      description: Upload and register a new API definition with metadata and specification
+        file.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Definition'
+      responses:
+        '201':
+          description: Definition created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Definition'
+        '400':
+          description: Invalid request. Check the definition format and required fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Definition with this ID already exists. Use a different ID
+            or update the existing definition.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /definitions/{id}:
+    get:
+      tags:
+      - definition
+      summary: Get definition details
+      description: Retrieve complete metadata and specification file content for a
+        specific definition.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The unique definition identifier
+        examples:
+        - payment-api-v2
+      responses:
+        '200':
+          description: Definition retrieved successfully including metadata and specification
+            file.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Definition'
+        '404':
+          description: Definition not found with the specified ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+      - definition
+      summary: Update definition (partial update)
+      description: Partially update an existing definition. Only provided fields will
+        be updated.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The unique definition identifier
+        examples:
+        - payment-api-v2
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DefinitionUpdate'
+      responses:
+        '200':
+          description: Definition updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Definition'
+        '400':
+          description: Invalid request. Check the update payload format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Definition not found with the specified ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+      - definition
+      summary: Delete definition
+      description: Permanently delete a definition. Cannot delete if currently in
+        use by active processes.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The unique definition identifier
+        examples:
+        - payment-api-v2
+      responses:
+        '204':
+          description: Definition deleted successfully.
+        '404':
+          description: Definition not found with the specified ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Cannot delete definition because it is currently in use by
+            one or more processes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /definitions/{id}/update:
+    post:
+      tags:
+      - definition
+      summary: Update definition from source
+      description: Automatically fetch and update the definition from its original
+        source_url. Only works for registry-installed definitions that have a source_url.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The unique definition identifier
+        examples:
+        - payment-api-v2
+      responses:
+        '200':
+          description: Definition updated successfully from source URL.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Definition'
+        '400':
+          description: Definition does not have a source_url. Only registry-installed
+            definitions can use this endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Definition not found with the specified ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: Failed to fetch updated definition from source URL. The remote
+            server may be unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /definitions/install:
+    post:
+      tags:
+      - definition
+      summary: Install definition from registry
+      description: Download and install a definition from a registry URL. The URL
+        should point to an API endpoint that returns the complete definition data.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstallRequest'
+      responses:
+        '201':
+          description: Definition installed successfully from registry.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Definition'
+        '400':
+          description: Invalid request or validation failure. The fetched definition
+            may be malformed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Definition with this ID already exists. Remove the existing
+            definition first or use a different ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: Failed to fetch definition from the provided URL. Check the
+            URL and network connectivity.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /modules:
+    get:
+      tags:
+      - module
+      summary: List all modules
+      description: Retrieve a paginated list of WASM modules with optional filtering
+        by type and search query. Supports sorting and pagination.
+      parameters:
+      - name: query
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Search query to filter modules by ID, name, or description (partial
+          match, case-insensitive)
+        examples:
+        - docker sandbox
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - sandbox
+          - language
+          - proxy
+          - interceptor
+          - hook
+        description: Filter modules by functional category
+        examples:
+        - sandbox
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+          minimum: 1
+          maximum: 100
+        description: Maximum number of results to return per page
+        examples:
+        - 25
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          minimum: 0
+        description: Number of results to skip (for pagination)
+        examples:
+        - 0
+      - name: sort_by
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - id
+          - name
+          - type
+          default: name
+        description: Field to sort results by
+        examples:
+        - name
+      - name: sort_order
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: asc
+        description: Sort direction - ascending or descending
+        examples:
+        - asc
+      responses:
+        '200':
+          description: A list of modules matching the filter criteria.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Module'
+    post:
+      tags:
+      - module
+      summary: Create a new module
+      description: Upload and register a new WASM module with metadata and compiled
+        binary file.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Module'
+      responses:
+        '201':
+          description: Module created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+        '400':
+          description: Invalid request. Check the module format and required fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Module with this ID already exists. Use a different ID or update
+            the existing module.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /modules/{id}:
+    get:
+      tags:
+      - module
+      summary: Get module details
+      description: Retrieve complete metadata and WASM binary content for a specific
+        module.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The unique module identifier
+        examples:
+        - docker-sandbox-v1
+      responses:
+        '200':
+          description: Module retrieved successfully including metadata and WASM file.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+        '404':
+          description: Module not found with the specified ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+      - module
+      summary: Update module (partial update)
+      description: Partially update an existing module. Only provided fields will
+        be updated.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The unique module identifier
+        examples:
+        - docker-sandbox-v1
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ModuleUpdate'
+      responses:
+        '200':
+          description: Module updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+        '400':
+          description: Invalid request. Check the update payload format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Module not found with the specified ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+      - module
+      summary: Delete module
+      description: Permanently delete a module. Cannot delete if currently in use
+        by active processes.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The unique module identifier
+        examples:
+        - docker-sandbox-v1
+      responses:
+        '204':
+          description: Module deleted successfully.
+        '404':
+          description: Module not found with the specified ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Cannot delete module because it is currently in use by one
+            or more processes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /modules/{id}/update:
+    post:
+      tags:
+      - module
+      summary: Update module from source
+      description: Automatically fetch and update the module from its original source_url.
+        Only works for registry-installed modules that have a source_url.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The unique module identifier
+        examples:
+        - docker-sandbox-v1
+      responses:
+        '200':
+          description: Module updated successfully from source URL.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+        '400':
+          description: Module does not have a source_url. Only registry-installed
+            modules can use this endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Module not found with the specified ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: Failed to fetch updated module from source URL. The remote
+            server may be unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /modules/install:
+    post:
+      tags:
+      - module
+      summary: Install module from registry
+      description: Download and install a module from a registry URL. The URL should
+        point to an API endpoint that returns the complete module data.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstallRequest'
+      responses:
+        '201':
+          description: Module installed successfully from registry.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+        '400':
+          description: Invalid request or validation failure. The fetched module may
+            be malformed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Module with this ID already exists. Remove the existing module
+            first or use a different ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: Failed to fetch module from the provided URL. Check the URL
+            and network connectivity.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
