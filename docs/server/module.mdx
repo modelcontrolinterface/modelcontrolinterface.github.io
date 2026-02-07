@@ -3,73 +3,111 @@ title: "Overview"
 description: "An top-level description of modules and their role in MCI"
 ---
 
-MCI (Modular Computing Interface) is, at its core, a server and runtime manager. It accepts connections from clients attempting to execute tasks-but without modules, it cannot interpret instructions, manage dispatches, or communicate with external services.
+MCI (Modular Computing Interface) is, at its core, a server and runtime
+manager. It accepts connections from clients attempting to execute tasks-but
+without modules, it cannot interpret instructions, manage dispatches, or
+communicate with external services.
 
-Modules make MCI truly _modular_. They extend your instance to support different instruction languages, connect to new protocols and standards, manage permissions, and more.
+Modules make MCI truly *modular*. They extend your instance to support
+different instruction languages, connect to new protocols and standards, manage
+permissions, and more.
 
 ## Types of Modules
 
 Modules serve specialized functions across five categories:
 
-| **Module Type** | **Primary Function**                                                                                                                            |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Sandbox**     | Provides a secure, isolated environment (container, VM, or shell) where scripts execute. Mounts a shared directory for code and dependencies.   |
-| **Proxy**       | Acts as a reverse proxy for communicating with external services using specific protocols and standards such as `REST`, `GraphQL`, or `gRPC`.   |
+| **Module Type** | **Primary Function** |
+| - | - |
+| **Sandbox**     | Provides a secure, isolated environment (container, VM, or shell) where scripts execute. Mounts a shared directory for code and dependencies. |
+| **Proxy**       | Acts as a reverse proxy for communicating with external services using specific protocols and standards such as `REST`, `GraphQL`, or `gRPC`. |
 | **Interceptor** | Middleware that sits between scripts and services. Handles logging, security filtering, request modification, and other cross-cutting concerns. |
-| **Language**    | Generates language-specific libraries that models use to execute actions within sandboxes and send dispatches back to the MCI server.           |
-| **Hook**        | Event-driven peripherals that expose servers for external notifications (e.g., GitHub webhooks) to trigger model actions.                       |
+| **Language**    | Generates language-specific libraries that models use to execute actions within sandboxes and send dispatches back to the MCI server. |
+| **Hook**        | Event-driven peripherals that expose servers for external notifications (e.g., GitHub webhooks) to trigger model actions. |
 
 ### Sandbox Modules
 
-Sandboxes provide isolated environments for code execution-whether Docker/Podman containers, online execution platforms, Nix shells, or local environments.
+Sandboxes provide isolated environments for code execution-whether
+Docker/Podman containers, online execution platforms, Nix shells, or local
+environments.
 
 A functional sandbox must satisfy three requirements:
 
-1. **Code Execution**: The environment must include all necessary tools and dependencies to run the target code.
-2. **Directory Mounting**: The sandbox must mount a read-only directory containing generated code and libraries. MCI, working with language modules, prepares this directory, which can be mounted via the host filesystem or Network File System (NFS).
-3. **MCI Communication**: The sandbox requires a lightweight client to send requests and receive responses from MCI during action dispatches.
+1. **Code Execution**: The environment must include all necessary tools and
+  dependencies to run the target code.
 
-When code executes, it communicates back to MCI, requiring network access. Sandboxes should restrict network traffic **exclusively** to the configured MCI server address.
+2. **Directory Mounting**: The sandbox must mount a read-only directory
+  containing generated code and libraries. MCI, working with language modules,
+  prepares this directory, which can be mounted via the host filesystem or
+  Network File System (NFS).
+
+3. **MCI Communication**: The sandbox requires a lightweight client to send
+  requests and receive responses from MCI during action dispatches.
+
+When code executes, it communicates back to MCI, requiring network access.
+Sandboxes should restrict network traffic **exclusively** to the configured MCI
+server address.
 
 ### Proxy Modules
 
-Each proxy module enables communication over specific protocols with defined definition. For example, a proxy might handle `REST` endpoints over `HTTP`.
+Each proxy module enables communication over specific protocols with defined
+definition. For example, a proxy might handle `REST` endpoints over `HTTP`.
 
 Proxy modules must implement two capabilities:
 
-1. **Proxy Instantiation**: Expose a function allowing MCI to create proxy instances. Each proxy acts as a client-server hybrid that transforms MCI calls into appropriate requests for target servers.
-2. **Definition Translation**: Ingest specification files (e.g., `OpenAPI`) and return structured data describing available requests, expected responses, and schemas. This structure enables generation of language-specific library bindings.
+1. **Proxy Instantiation**: Expose a function allowing MCI to create proxy
+  instances. Each proxy acts as a client-server hybrid that transforms MCI
+  calls into appropriate requests for target servers.
+
+2. **Definition Translation**: Ingest specification files (e.g., `OpenAPI`)
+  and return structured data describing available requests, expected responses,
+  and schemas. This structure enables generation of language-specific library
+  bindings.
 
 ## Interceptor Modules
 
-Interceptors inspect and modify outgoing requests and incoming responses. They enable request logging, permission enforcement, request redirection, and on-the-fly modifications during transit.
+Interceptors inspect and modify outgoing requests and incoming responses. They
+enable request logging, permission enforcement, request redirection, and
+on-the-fly modifications during transit.
 
 ### Language Modules
 
-Language modules generate the libraries that models use to perform actions. They consume definition data from proxy translations and convert it into language-specific bindings. MCI manages these libraries as files that sandbox modules reference during execution. Before running code, MCI injects the appropriate library, enabling dispatches back to the MCI server.
+Language modules generate the libraries that models use to perform actions.
+They consume definition data from proxy translations and convert it into
+language-specific bindings. MCI manages these libraries as files that sandbox
+modules reference during execution. Before running code, MCI injects the
+appropriate library, enabling dispatches back to the MCI server.
 
 ### Hook Modules
 
-Hook modules are event servers. When loaded, they start a server on a configured address and wait for external requests such as webhooks. Upon receiving a request, the server forwards the data to subscribed clients for processing.
+Hook modules are event servers. When loaded, they start a server on a
+configured address and wait for external requests such as webhooks. Upon
+receiving a request, the server forwards the data to subscribed clients for
+processing.
+
 
 ## Module Life-cycle
 
-Modules are long-lived components that MCI discovers, loads, communicates with, and coordinates during runtime. The module life-cycle defines how modules are installed, initialized, and integrated into an active MCI instance.
+Modules are long-lived components that MCI discovers, loads, communicates with,
+and coordinates during runtime. The module life-cycle defines how modules are
+installed, initialized, and integrated into an active MCI instance.
 
-## Installation
+### Installation
 
-Installation makes a module discoverable to MCI. At this stage, modules are not running and have no active connection to the server.
+Installation makes a module discoverable to MCI. At this stage, modules are
+not running and have no active connection to the server.
 
 There are 2 ways by which modules can be installed with MCI;
 
-- Installation by instantiation
+- Installation by instantiating
 - Installations over Registries
 
-### Installation by instantiation
+#### Installation by instantiating
 
-Installation by instantiating allows users to add a modules by manually providing the details for a module.
+Installation by instantiating allows users to add a modules by manually
+providing the details for a module.
 
-This can be done by making a POST request to `/modules` with the details for the module.
+This can be done by making a POST request to `/modules` with the details for
+the module.
 
 ```python
 import requests
@@ -91,9 +129,10 @@ print(response.text)
 
 [Reference the API reference](https://modelcontrolinterface.mintlify.app/api-reference/module/create-a-new-module)
 
-### Installations over Registries
+#### Installations over Registries
 
-Modules can also be installed from a registry, for this you must simply make a `POST` request to `/modules/install` with the registry entry URI.
+Modules can also be installed from a registry, for this you must simply make a
+`POST` request to `/modules/install` with the registry entry URI.
 
 ```python
 import requests
@@ -107,22 +146,31 @@ print(response.text)
 
 [Reference the API reference](https://modelcontrolinterface.mintlify.app/api-reference/module/install-module-from-registry)
 
-## Module Initialization
+### Module Initialization
 
-Initialization occurs when MCI loads an installed module into an active instance. During this phase, the module becomes operational and establishes its relationship with the MCI server.
+Initialization occurs when MCI loads an installed module into an active
+instance. During this phase, the module becomes operational and establishes its
+relationship with the MCI server.
 
-For a module to be initialized by MCI it first must be enabled. This is also done by a `PUT` request `/modules/{id}` and setting the `enabled` field to `true`.
+For a module to be initialized by MCI it first must be enabled. This is also
+done by a `PUT` request `/modules/{id}` and setting the `enabled` field to
+true.
 
-With this, when MCI start up, it looks for all enabled moduled and tries to initialize it, however, for a module to be successfully initialized, it must pass the configuration validation process.
+With this, when MCI start up, it looks for all enabled moduled and tries to
+initialize it, however, for a module to be successfully initialized, it must
+pass the configuration validation process.
 
-## Module Configuration & Secrets
+### Module Configuration
 
-Every module may register a set of configuration fields, this allows modules to collect input from the user to guide the initialization process. This data may range from API secretes, preferences, constraints and additional information.
+Every module may register a set of configuration fields, this allows modules
+to collect input from the user to guide the initialization process. This data
+may range from API secretes, preferences, constraints and additional
+information.
 
 `To be continued`
 
-## Module Signaling
+### Module Signaling
 
-## Module Updating
+### Module Updating
 
-## Module Communication Model
+### Module Communication Model
