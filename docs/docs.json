@@ -35,15 +35,13 @@
               {
                 "group": "Processes",
                 "pages": [
-                  "server/process",
-                  "untitled-page"
+                  "server/process"
                 ]
               },
               {
                 "group": "Modules",
                 "pages": [
-                  "server/module",
-                  "untitled-page"
+                  "server/module"
                 ]
               },
               {
