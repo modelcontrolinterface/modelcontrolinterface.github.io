@@ -29,27 +29,28 @@
                 "group": "About MCI",
                 "pages": [
                   "server/architecture",
-                  "server/transport",
-                  "server/process",
-                  "server/module",
-                  "server/definition"
+                  "server/transport"
                 ]
               },
               {
                 "group": "Processes",
                 "pages": [
+                  "server/process",
                   "untitled-page"
                 ]
               },
               {
                 "group": "Modules",
                 "pages": [
+                  "server/module",
                   "untitled-page"
                 ]
               },
               {
                 "group": "Definitions",
-                "pages": []
+                "pages": [
+                  "server/definition"
+                ]
               }
             ]
           },
