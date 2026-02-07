@@ -37,12 +37,12 @@
           "implicit": {
             "authorizationUrl": "https://auth.example.com/oauth/authorize",
             "scopes": {
-              "write:processes": "modify processes",
               "read:processes": "read processes",
-              "write:definitions": "modify definitions",
+              "write:processes": "modify processes",
               "read:definitions": "read definitions",
-              "write:modules": "modify modules",
-              "read:modules": "read modules"
+              "write:definitions": "modify definitions",
+              "read:modules": "read modules",
+              "write:modules": "modify modules"
             }
           }
         }
@@ -308,21 +308,6 @@
           }
         }
       },
-      "InstallRequest": {
-        "type": "object",
-        "required": ["url"],
-        "properties": {
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "description": "Direct URL to the API endpoint that returns the complete definition or module data (including metadata and files)",
-            "examples": [
-              "https://registry.example.com/api/definitions/payment-api-v2",
-              "https://registry.company.com/modules/docker-sandbox-v1"
-            ]
-          }
-        }
-      },
       "Module": {
         "type": "object",
         "required": ["id", "name", "type", "wasm_file"],
@@ -418,6 +403,21 @@
           }
         }
       },
+      "InstallRequest": {
+        "type": "object",
+        "required": ["url"],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Direct URL to the API endpoint that returns the complete definition or module data (including metadata and files)",
+            "examples": [
+              "https://registry.example.com/api/definitions/payment-api-v2",
+              "https://registry.company.com/modules/docker-sandbox-v1"
+            ]
+          }
+        }
+      },
       "Configuration": {
         "type": "object",
         "description": "Runtime configuration key-value pairs for a module or definition. Maximum 100 properties allowed.",
@@ -446,14 +446,12 @@
         },
         "examples": [
           {
-            "API_KEY": "*****",
-            "DB_PASSWORD": "****",
-            "OAUTH_SECRET": "******"
+            "API_KEY": "*******************",
+            "DB_PASSWORD": "*******************",
+            "OAUTH_SECRET": "*******************"
           }
         ],
-        "propertyNames": {
-          "pattern": "^[A-Z][A-Z0-9_]*$"
-        }
+        "maxProperties": 100
       },
       "SignalRequest": {
         "type": "object",
@@ -461,9 +459,9 @@
         "properties": {
           "signal": {
             "type": "string",
-            "enum": ["kill", "startup", "restart", "instantiate"],
-            "description": "Lifecycle control signal: kill (terminate), startup (start), restart (stop and start), instantiate (initialize without starting)",
-            "examples": ["restart", "startup", "kill"]
+            "enum": ["kill", "start", "restart", "instantiate"],
+            "description": "Lifecycle control signal: kill, start, restart, initialize without starting",
+            "examples": ["restart", "start", "kill"]
           }
         }
       },
