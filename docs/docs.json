@@ -43,7 +43,9 @@
               },
               {
                 "group": "Modules",
-                "pages": []
+                "pages": [
+                  "untitled-page"
+                ]
               },
               {
                 "group": "Definitions",
