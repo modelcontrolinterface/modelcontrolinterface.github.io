@@ -34,6 +34,18 @@
                   "server/definition",
                   "server/process"
                 ]
+              },
+              {
+                "group": "Processes",
+                "pages": []
+              },
+              {
+                "group": "Modules",
+                "pages": []
+              },
+              {
+                "group": "Definitions",
+                "pages": []
               }
             ]
           },
