@@ -30,14 +30,16 @@
                 "pages": [
                   "server/architecture",
                   "server/transport",
+                  "server/process",
                   "server/module",
-                  "server/definition",
-                  "server/process"
+                  "server/definition"
                 ]
               },
               {
                 "group": "Processes",
-                "pages": []
+                "pages": [
+                  "untitled-page"
+                ]
               },
               {
                 "group": "Modules",
