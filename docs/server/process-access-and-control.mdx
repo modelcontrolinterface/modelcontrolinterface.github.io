@@ -1,0 +1,97 @@
+---
+title: "Process Access & Control"
+description: "Understanding process lifecycle management and available operations"
+---
+
+# Process Access & Control
+
+Once created, processes remain accessible throughout their lifecycle. You can query their state, retrieve execution data, and control their behavior through dedicated operations.
+
+---
+
+## Retrieving Process Information
+
+### View a Single Process
+Retrieve complete information about a specific process, including its definition, current status, exit state, environment, and timestamps.
+
+### List Multiple Processes
+Query processes with filtering and pagination. You can filter by:
+- Status (queued, running, completed)
+- Exit state (success, failed, terminated)
+- Environment
+- Creation and completion time ranges
+- Name, description, or PID search
+
+This enables auditing execution history, monitoring active processes, and analyzing outcomes across environments.
+
+---
+
+## Execution Artifacts
+
+Process execution produces two types of data, accessed separately:
+
+### Logs
+Diagnostic traces from execution including stdout, stderr, and timestamps. Use logs for debugging, troubleshooting, and auditing.
+
+### Output
+Structured result data produced by the process. The format depends on what the process generates. Use output to retrieve computation results, processed data, or generated reports.
+
+Keeping logs separate from output ensures diagnostic traces don't mix with meaningful result data.
+
+---
+
+## Lifecycle Control
+
+### Control Signals
+Send signals to manage process execution:
+
+**startup** — Begin execution
+**instantiate** — Initialize without running
+**kill** — Terminate execution
+**restart** — Stop and start again
+
+Signals control runtime behavior without changing the process definition itself.
+
+---
+
+## Modification and Deletion
+
+### Partial Updates
+Modify specific process fields without replacing the entire definition. Only the fields you provide are changed; everything else remains the same.
+
+**Restriction:** You cannot modify a running process.
+
+### Deletion
+Permanently remove a process and all associated data.
+
+**Restriction:** You cannot delete a running process.
+
+---
+
+## State Protection
+
+Running processes are protected from modification and deletion. These operations return a conflict error if attempted while the process is running.
+
+**Why:** Changing or removing a running process would corrupt execution state and produce inconsistent results.
+
+**Safe workflow:**
+1. Send the `kill` signal to stop execution
+2. Wait for the process to complete
+3. Perform your modification or deletion
+
+This ensures execution integrity and prevents state corruption.
+
+---
+
+## Error Conditions
+
+Operations may fail for several reasons:
+
+**Not Found** — Process doesn't exist
+**Unauthorized** — Missing or invalid credentials
+**Forbidden** — Insufficient permissions
+**Conflict** — Operation not allowed in current state (e.g., modifying running process)
+**Validation Error** — Invalid input data or failed linting
+**Server Error** — Unexpected system error
+
+Each error includes a descriptive message and relevant details to help diagnose the issue.

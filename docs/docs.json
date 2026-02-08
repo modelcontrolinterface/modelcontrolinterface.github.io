@@ -31,7 +31,11 @@
               },
               {
                 "group": "Processes",
-                "pages": ["server/process-overview", "server/process-lifecycle"]
+                "pages": [
+                  "server/process-overview",
+                  "server/process-lifecycle",
+                  "server/process-access-and-control"
+                ]
               },
               {
                 "group": "Modules",
