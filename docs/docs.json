@@ -43,6 +43,9 @@
               {
                 "group": "Modules",
                 "pages": [
+                  "server/module-overview",
+                  "server/module-lifecycle",
+                  "server/module-access-and-control",
                   {
                     "group": "Interceptor Modules",
                     "pages": []
@@ -62,10 +65,7 @@
                   {
                     "group": "Proxy Modules",
                     "pages": []
-                  },
-                  "server/module-overview",
-                  "server/module-lifecycle",
-                  "server/module-access-and-control"
+                  }
                 ]
               },
               {
