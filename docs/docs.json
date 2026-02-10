@@ -39,11 +39,19 @@
               },
               {
                 "group": "Modules",
-                "pages": ["server/module-overview"]
+                "pages": [
+                  "server/module-overview",
+                  "server/module-lifecycle",
+                  "server/module-access-and-control"
+                ]
               },
               {
                 "group": "Definitions",
-                "pages": ["server/definition-overview"]
+                "pages": [
+                  "server/definition-overview",
+                  "server/definition-lifecycle",
+                  "server/definition-access-and-control"
+                ]
               }
             ]
           },
