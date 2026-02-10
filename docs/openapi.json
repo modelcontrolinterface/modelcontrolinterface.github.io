@@ -126,20 +126,6 @@
               }
             ]
           },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true,
-            "description": "ISO 8601 timestamp when the process was created",
-            "examples": ["2026-02-04T10:30:00Z"]
-          },
-          "completed_at": {
-            "type": ["null", "string"],
-            "format": "date-time",
-            "readOnly": true,
-            "description": "ISO 8601 timestamp when the process completed. Null if never completed or currently running.",
-            "examples": ["2026-02-04T10:35:45Z", null]
-          },
           "save": {
             "type": "boolean",
             "default": false,
@@ -158,12 +144,26 @@
             "description": "Whether to immediately execute the process upon creation",
             "examples": [true, false]
           },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "description": "ISO 8601 timestamp when the process was created",
+            "examples": ["2026-02-04T10:30:00Z"]
+          },
           "updated_at": {
             "type": "string",
             "format": "date-time",
             "readOnly": true,
             "description": "ISO 8601 timestamp when the process was last updated",
             "examples": ["2026-02-04T10:32:15Z", "2026-02-04T11:00:00Z"]
+          },
+          "completed_at": {
+            "type": ["null", "string"],
+            "format": "date-time",
+            "readOnly": true,
+            "description": "ISO 8601 timestamp when the process completed. Null if never completed or currently running.",
+            "examples": ["2026-02-04T10:35:45Z", null]
           }
         }
       },
@@ -225,6 +225,11 @@
             "description": "Unique identifier slug for the definition (alphanumeric, hyphens, and underscores only)",
             "examples": ["payment-api-v2", "user-service-v1", "analytics_api"]
           },
+          "definition_type": {
+            "type": "string",
+            "description": "The specification format or schema type",
+            "examples": ["openapi", "graphql", "asyncapi"]
+          },
           "enable": {
             "type": "boolean",
             "description": "Whether the definition should be initialized and active",
@@ -243,12 +248,7 @@
               "REST API specification for payment processing with support for credit cards, ACH, and digital wallets"
             ]
           },
-          "type": {
-            "type": "string",
-            "description": "The specification format or schema type",
-            "examples": ["openapi", "graphql", "asyncapi"]
-          },
-          "specification_file": {
+          "definition_file": {
             "type": "string",
             "format": "binary",
             "description": "The binary content of the specification file (e.g., OpenAPI YAML/JSON, GraphQL schema)"
@@ -260,20 +260,6 @@
             "examples": [
               "https://registry.example.com/api/definitions/payment-api-v2"
             ]
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true,
-            "description": "ISO 8601 timestamp when the definition was created",
-            "examples": ["2026-02-01T09:00:00Z"]
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true,
-            "description": "ISO 8601 timestamp when the definition was last updated",
-            "examples": ["2026-02-04T14:30:00Z"]
           }
         }
       },
@@ -296,12 +282,12 @@
             "description": "Comprehensive explanation of the definition's purpose",
             "examples": ["Updated API with cryptocurrency support"]
           },
-          "type": {
+          "definition_type": {
             "type": "string",
             "description": "The specification format or schema type",
             "examples": ["openapi"]
           },
-          "specification_file": {
+          "definition_file": {
             "type": "string",
             "format": "binary",
             "description": "The binary content of the specification file"
@@ -354,20 +340,6 @@
             "examples": [
               "https://registry.example.com/api/modules/docker-sandbox-v1"
             ]
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true,
-            "description": "ISO 8601 timestamp when the module was created",
-            "examples": ["2026-02-01T09:00:00Z"]
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true,
-            "description": "ISO 8601 timestamp when the module was last updated",
-            "examples": ["2026-02-04T14:30:00Z"]
           }
         }
       },
