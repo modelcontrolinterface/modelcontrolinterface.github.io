@@ -27,7 +27,10 @@
               },
               {
                 "group": "About MCI",
-                "pages": ["server/architecture", "server/transport"]
+                "pages": [
+                  "server/architecture",
+                  "server/transport"
+                ]
               },
               {
                 "group": "Processes",
@@ -40,6 +43,26 @@
               {
                 "group": "Modules",
                 "pages": [
+                  {
+                    "group": "Interceptor Modules",
+                    "pages": []
+                  },
+                  {
+                    "group": "Hook Modules",
+                    "pages": []
+                  },
+                  {
+                    "group": "Sandbox Modules",
+                    "pages": []
+                  },
+                  {
+                    "group": "Language Modules",
+                    "pages": []
+                  },
+                  {
+                    "group": "Proxy Modules",
+                    "pages": []
+                  },
                   "server/module-overview",
                   "server/module-lifecycle",
                   "server/module-access-and-control"
