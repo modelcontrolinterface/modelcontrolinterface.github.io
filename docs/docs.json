@@ -27,16 +27,12 @@
               },
               {
                 "group": "About MCI",
-                "pages": [
-                  "server/architecture",
-                  "server/transport"
-                ]
+                "pages": ["server/architecture", "server/transport"]
               },
               {
                 "group": "Processes",
                 "pages": [
                   "server/process-overview",
-                  "server/process-lifecycle",
                   "server/process-access-and-control"
                 ]
               },
@@ -44,7 +40,6 @@
                 "group": "Modules",
                 "pages": [
                   "server/module-overview",
-                  "server/module-lifecycle",
                   "server/module-access-and-control",
                   {
                     "group": "Interceptor Modules",
