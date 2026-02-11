@@ -217,7 +217,7 @@
       },
       "Definition": {
         "type": "object",
-        "required": ["id", "name", "type", "specification_file"],
+        "required": ["id", "name", "type", "definition_file"],
         "properties": {
           "id": {
             "type": "string",
@@ -225,12 +225,12 @@
             "description": "Unique identifier slug for the definition (alphanumeric, hyphens, and underscores only)",
             "examples": ["payment-api-v2", "user-service-v1", "analytics_api"]
           },
-          "definition_type": {
+          "type": {
             "type": "string",
-            "description": "The specification format or schema type",
+            "description": "The definition format or schema type",
             "examples": ["openapi", "graphql", "asyncapi"]
           },
-          "enable": {
+          "is_enabled": {
             "type": "boolean",
             "description": "Whether the definition should be initialized and active",
             "default": false,
@@ -245,13 +245,13 @@
             "type": "string",
             "description": "Comprehensive explanation of the definition's purpose and functionality",
             "examples": [
-              "REST API specification for payment processing with support for credit cards, ACH, and digital wallets"
+              "REST API definition for payment processing with support for credit cards, ACH, and digital wallets"
             ]
           },
           "definition_file": {
             "type": "string",
             "format": "binary",
-            "description": "The binary content of the specification file (e.g., OpenAPI YAML/JSON, GraphQL schema)"
+            "description": "The binary content of the definition file (e.g., OpenAPI YAML/JSON, GraphQL schema)"
           },
           "source_url": {
             "type": "string",
@@ -267,7 +267,7 @@
         "type": "object",
         "description": "Partial update schema for definitions. All fields are optional.",
         "properties": {
-          "enable": {
+          "is_enabled": {
             "type": "boolean",
             "description": "Whether the definition should be initialized and active",
             "examples": [true, false]
@@ -282,15 +282,15 @@
             "description": "Comprehensive explanation of the definition's purpose",
             "examples": ["Updated API with cryptocurrency support"]
           },
-          "definition_type": {
+          "type": {
             "type": "string",
-            "description": "The specification format or schema type",
+            "description": "The definition format or schema type",
             "examples": ["openapi"]
           },
           "definition_file": {
             "type": "string",
             "format": "binary",
-            "description": "The binary content of the specification file"
+            "description": "The binary content of the definition file"
           }
         }
       },
@@ -304,7 +304,7 @@
             "description": "Unique identifier slug for the module (alphanumeric, hyphens, and underscores only)",
             "examples": ["docker-sandbox-v1", "python_runtime", "auth-proxy"]
           },
-          "enable": {
+          "is_enabled": {
             "type": "boolean",
             "description": "Whether the module should be initialized and active",
             "default": false,
@@ -1327,11 +1327,26 @@
             "schema": {
               "type": "string"
             },
-            "description": "Filter definitions by specification format/type",
+            "description": "Filter definitions by definition format/type",
             "examples": {
               "openapi": {
                 "value": "openapi",
                 "summary": "OpenAPI definitions only"
+              }
+            }
+          },
+          {
+            "name": "is_enabled",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filter by enabled definitions",
+            "examples": {
+              "enabled": {
+                "value": false,
+                "summary": "Only disabled definitions"
               }
             }
           },
@@ -1426,7 +1441,7 @@
       "post": {
         "tags": ["definition"],
         "summary": "Create a new definition",
-        "description": "Upload and register a new API definition with metadata and specification file.",
+        "description": "Upload and register a new API definition with metadata and definition file.",
         "requestBody": {
           "required": true,
           "content": {
@@ -1435,13 +1450,13 @@
                 "$ref": "#/components/schemas/Definition"
               },
               "encoding": {
-                "specification_file": {
+                "definition_file": {
                   "contentType": "application/octet-stream"
                 }
               }
             }
           },
-          "description": "Definition metadata and specification file"
+          "description": "Definition metadata and definition file"
         },
         "responses": {
           "201": {
@@ -1490,7 +1505,7 @@
       "get": {
         "tags": ["definition"],
         "summary": "Get definition details",
-        "description": "Retrieve complete metadata and specification file content for a specific definition.",
+        "description": "Retrieve complete metadata and definition file content for a specific definition.",
         "parameters": [
           {
             "name": "id",
@@ -1510,7 +1525,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Definition retrieved successfully including metadata and specification file.",
+            "description": "Definition retrieved successfully including metadata and definition file.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1623,7 +1638,7 @@
                 "$ref": "#/components/schemas/DefinitionUpdate"
               },
               "encoding": {
-                "specification_file": {
+                "definition_file": {
                   "contentType": "application/octet-stream"
                 }
               }
@@ -1923,87 +1938,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "403": {
-            "$ref": "#/components/responses/ForbiddenError"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalServerError"
-          }
-        }
-      }
-    },
-    "/definitions/{id}/signal": {
-      "post": {
-        "tags": ["definition"],
-        "summary": "Send signal to definition",
-        "description": "Send lifecycle control signals to a definition (kill, startup, restart, instantiate). Note: Not all definitions support all signals - particularly instantiate may not be available.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "The unique definition identifier",
-            "examples": {
-              "payment": {
-                "value": "payment-api-v2"
-              }
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SignalRequest"
-              }
-            }
-          },
-          "description": "Signal to send to the definition"
-        },
-        "responses": {
-          "200": {
-            "description": "Signal handled successfully and definition responded."
-          },
-          "404": {
-            "description": "Definition not found with the specified ID.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Definition does not support the requested signal. For example, this definition may not be instantiable.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "examples": {
-                  "not_instantiable": {
-                    "value": {
-                      "error": "NotInstantiable",
-                      "message": "This definition does not support instantiation.",
-                      "details": {
-                        "definition_id": "payment-api-v2",
-                        "supported_signals": ["kill", "startup", "restart"],
-                        "unsupported_signal": "instantiate"
-                      }
-                    }
-                  }
                 }
               }
             }
